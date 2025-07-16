@@ -30,11 +30,6 @@ const CartDrawer = () => {
     navigate('/checkout');
   };
 
-  // Helper function to create unique key for items with customizations
-  const getItemKey = (item: any) => {
-    return `${item.id}-${JSON.stringify(item.customizations || {})}`;
-  };
-
   if (items.length === 0) {
     return (
       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
@@ -82,8 +77,8 @@ const CartDrawer = () => {
 
         {/* Cart Items */}
         <div className="flex-1 overflow-y-auto py-4 space-y-4">
-          {items.map((item, index) => (
-            <div key={`${getItemKey(item)}-${index}`} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+          {items.map((item) => (
+            <div key={item.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               {/* Item Image */}
               <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-2xl shadow-sm">
                 {item.image}
@@ -94,14 +89,6 @@ const CartDrawer = () => {
                 <h4 className="font-semibold text-gray-800 truncate">{item.name}</h4>
                 <p className="text-sm text-gray-500 truncate">{item.nameAr}</p>
                 <p className="text-sm font-medium text-amber-600">SAR {item.price}</p>
-                {item.customizations && (
-                  <div className="text-xs text-emerald-600 mt-1">
-                    {item.customizations.spiceLevel && `Spice: ${item.customizations.spiceLevel}/3`}
-                    {item.customizations.extras && item.customizations.extras.length > 0 && (
-                      <div>Extras: {item.customizations.extras.map((e: any) => e.name).join(', ')}</div>
-                    )}
-                  </div>
-                )}
               </div>
 
               {/* Quantity Controls */}

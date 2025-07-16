@@ -5,14 +5,14 @@ export interface Order {
   id: string;
   order_number: string;
   customer_id: string;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'cancelled';
+  status: string;
   total_amount: number;
   created_at: string;
-  customer: {
+  customer?: {
     full_name: string;
     phone: string;
   };
-  order_items: {
+  order_items?: {
     item_name: string;
     quantity: number;
   }[];
@@ -25,7 +25,7 @@ export function useRecentOrders(limit: number = 10): {
 } {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | undefined>();
+  const [error, setError] = useState<Error>();
 
   useEffect(() => {
     const fetchRecentOrders = async () => {
@@ -42,6 +42,7 @@ export function useRecentOrders(limit: number = 10): {
             status,
             total_amount,
             created_at,
+            customer:users(full_name, phone),
             order_items(item_name, quantity)
           `)
           .order('created_at', { ascending: false })
@@ -49,14 +50,7 @@ export function useRecentOrders(limit: number = 10): {
 
         if (fetchError) throw fetchError;
 
-        // Transform data to match Order type
-        const transformedData = (data || []).map(order => ({
-          ...order,
-          customer: { full_name: 'Customer', phone: '' }, // Default customer info
-          order_items: order.order_items || []
-        }));
-
-        setOrders(transformedData);
+        setOrders(data || []);
       } catch (err) {
         console.error('Error fetching recent orders:', err);
         setError(err as Error);
@@ -66,11 +60,20 @@ export function useRecentOrders(limit: number = 10): {
     };
 
     fetchRecentOrders();
+
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('recent-orders')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'orders' },
+        () => fetchRecentOrders()
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [limit]);
 
-  return {
-    data: orders,
-    loading,
-    error
-  };
+  return { data: orders, loading, error };
 }

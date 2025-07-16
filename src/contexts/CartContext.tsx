@@ -9,14 +9,12 @@ interface CartItem {
   quantity: number;
   image: string;
   spiceLevel: number;
-  customizations?: any;
 }
 
 interface CartContextType {
   items: CartItem[];
   totalItems: number;
   totalPrice: number;
-  total: number; // Adding the missing total property
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
@@ -41,17 +39,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const total = totalPrice; // Adding the total property that references totalPrice
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
-      const existingItem = prev.find(item => 
-        item.id === newItem.id && 
-        JSON.stringify(item.customizations) === JSON.stringify(newItem.customizations)
-      );
+      const existingItem = prev.find(item => item.id === newItem.id);
       if (existingItem) {
         return prev.map(item =>
-          item.id === newItem.id && JSON.stringify(item.customizations) === JSON.stringify(newItem.customizations)
+          item.id === newItem.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -85,7 +79,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       items,
       totalItems,
       totalPrice,
-      total,
       addItem,
       removeItem,
       updateQuantity,

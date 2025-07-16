@@ -46,7 +46,8 @@ export const useUserRole = () => {
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('email', user.email.toLowerCase())
+        .eq('is_active', true)
         .single();
 
       if (roleError && roleError.code !== 'PGRST116') {
@@ -118,8 +119,11 @@ export const useUserRole = () => {
 
     try {
       const { error } = await supabase.from('user_roles').insert({
-        user_id: user?.id || '',
-        role: role
+        email: email.toLowerCase(),
+        role: role,
+        granted_by: user?.id,
+        granted_at: new Date().toISOString(),
+        is_active: true
       });
 
       if (error) throw error;
@@ -140,8 +144,8 @@ export const useUserRole = () => {
     try {
       const { error } = await supabase
         .from('user_roles')
-        .update({ role: 'customer' })
-        .eq('user_id', user?.id);
+        .update({ is_active: false })
+        .eq('email', email.toLowerCase());
 
       if (error) throw error;
       

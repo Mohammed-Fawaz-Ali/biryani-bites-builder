@@ -59,14 +59,14 @@ export function usePopularItems(limit: number = 5): {
           
           if (existing) {
             existing.total_orders += item.quantity;
-            existing.total_revenue += parseFloat(item.total_price.toString());
+            existing.total_revenue += parseFloat(item.total_price);
           } else {
             itemStats.set(key, {
               name: item.item_name,
               name_ar: item.item_name_ar || '',
               category: item.menu_item?.category?.name || 'Unknown',
               total_orders: item.quantity,
-              total_revenue: parseFloat(item.total_price.toString()),
+              total_revenue: parseFloat(item.total_price),
               rating: item.menu_item?.rating || 0,
             });
           }
