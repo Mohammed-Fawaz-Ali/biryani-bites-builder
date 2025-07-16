@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,10 @@ import {
   Facebook,
   Twitter,
   Menu,
-  X
+  X,
+  Calendar,
+  Truck,
+  Globe
 } from 'lucide-react';
 import HeroSection from '@/components/HeroSection';
 import BiryaniBuilder from '@/components/BiryaniBuilder';
@@ -43,17 +45,19 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import AuthForm from '@/components/AuthForm';
 import UserProfile from '@/components/UserProfile';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { User, LogIn } from 'lucide-react';
+import { User, LogIn, ShoppingCart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { totalItems } = useCart();
   const [viewerCount, setViewerCount] = useState(47);
   const [recentOrder, setRecentOrder] = useState("Chicken Biryani");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [userProfileOpen, setUserProfileOpen] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
   useEffect(() => {
     // Simulate real-time activity
@@ -87,104 +91,179 @@ const Index = () => {
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const userAvatar = user?.user_metadata?.avatar_url || '';
 
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'en' ? 'ar' : 'en');
+    document.documentElement.dir = language === 'en' ? 'rtl' : 'ltr';
+  };
+
+  // Quick Action Tiles Data
+  const quickActions = [
+    {
+      title: language === 'en' ? 'View Menu' : 'عرض القائمة',
+      icon: Utensils,
+      onClick: () => navigate('/menu'),
+      gradient: 'from-emerald-500 to-teal-600'
+    },
+    {
+      title: language === 'en' ? 'Reservations' : 'الحجوزات',
+      icon: Calendar,
+      onClick: () => navigate('/reservations'),
+      gradient: 'from-blue-500 to-indigo-600'
+    },
+    {
+      title: language === 'en' ? 'Delivery' : 'التوصيل',
+      icon: Truck,
+      onClick: () => navigate('/menu'),
+      gradient: 'from-orange-500 to-red-600'
+    },
+    {
+      title: language === 'en' ? 'Reviews' : 'التقييمات',
+      icon: Star,
+      onClick: () => navigate('/reviews'),
+      gradient: 'from-purple-500 to-pink-600'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
-      {/* Navigation */}
-      <nav className={`${isScrolled ? 'bg-white/95 shadow-lg' : 'bg-white/90'} backdrop-blur-sm border-b border-orange-200 sticky top-0 z-50 transition-all duration-300`}>
+      {/* Sticky Navigation */}
+      <nav className={`${isScrolled ? 'bg-white/95 shadow-lg backdrop-blur-md' : 'bg-white/90 backdrop-blur-sm'} border-b border-emerald-200 sticky top-0 z-50 transition-all duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
               <div className="relative">
-                <ChefHat className="h-8 w-8 text-orange-600 transform hover:rotate-12 transition-transform duration-300" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center">
+                  <ChefHat className="h-6 w-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent hover:from-red-600 hover:to-orange-600 transition-all duration-300">
-                Spice Palace
+              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+                {language === 'en' ? 'Al-Bayt' : 'البيت'}
               </span>
             </div>
             
-            {/* Desktop Navigation */}
+            {/* Center Navigation - Desktop */}
             <div className="hidden md:flex items-center space-x-8">
-              <button onClick={() => navigate('/menu')} className="text-gray-700 hover:text-orange-600 transition-all duration-300 relative group">
-                Menu
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-600 group-hover:w-full transition-all duration-300"></span>
-              </button>
-              <a href="#about" className="text-gray-700 hover:text-orange-600 transition-all duration-300 relative group">
-                About
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-600 group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#gallery" className="text-gray-700 hover:text-orange-600 transition-all duration-300 relative group">
-                Gallery
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-600 group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <Button 
-                onClick={() => navigate('/menu')}
-                className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+              <button 
+                onClick={() => navigate('/')} 
+                className="text-emerald-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
               >
-                <Zap className="mr-2 h-4 w-4" />
-                Order Now
-              </Button>
+                {language === 'en' ? 'Home' : 'الرئيسية'}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+              </button>
+              <button 
+                onClick={() => navigate('/menu')} 
+                className="text-gray-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+              >
+                {language === 'en' ? 'Menu' : 'القائمة'}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+              </button>
+              <button 
+                onClick={() => navigate('/reservations')} 
+                className="text-gray-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+              >
+                {language === 'en' ? 'Reservations' : 'الحجوزات'}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+              </button>
+              <a 
+                href="#about" 
+                className="text-gray-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+              >
+                {language === 'en' ? 'About' : 'عن المطعم'}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+              </a>
             </div>
 
-          {/* User Profile OR Auth Button */}
-          {user ? (
-            <Popover>
-              <PopoverTrigger>
-                <Avatar className="h-8 w-8 cursor-pointer hover:scale-110 transition-transform duration-300">
-                  <AvatarImage src={userAvatar} alt={userDisplayName} />
-                  <AvatarFallback className="bg-gradient-to-r from-orange-600 to-red-600 text-white">
-                    {getInitials(userDisplayName)}
-                  </AvatarFallback>
-                </Avatar>
-              </PopoverTrigger>
-              <PopoverContent className="w-96 p-0" align="end">
-                <UserProfile />
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-700 hover:to-red-700"
-                >
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Sign In
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <AuthForm mode="login" onClose={() => setAuthDialogOpen(false)} />
-              </DialogContent>
-            </Dialog>
-          )}
-
-          {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-orange-600"
+            {/* Right Side Actions */}
+            <div className="flex items-center space-x-4">
+              {/* Language Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleLanguage}
+                className="hover:bg-emerald-50 border-emerald-200"
               >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Globe className="h-4 w-4 mr-2" />
+                {language === 'en' ? 'العربية' : 'English'}
               </Button>
+
+              {/* Cart Icon */}
+              <Button
+                variant="outline"
+                className="relative hover:bg-emerald-50 border-emerald-200"
+                onClick={() => navigate('/menu')}
+              >
+                <ShoppingCart className="h-5 w-5 text-emerald-600" />
+                {totalItems > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-emerald-600 text-white min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
+                    {totalItems}
+                  </Badge>
+                )}
+              </Button>
+
+              {/* User Profile OR Auth Button */}
+              {user ? (
+                <Popover>
+                  <PopoverTrigger>
+                    <Avatar className="h-8 w-8 cursor-pointer hover:scale-110 transition-transform duration-300">
+                      <AvatarImage src={userAvatar} alt={userDisplayName} />
+                      <AvatarFallback className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white">
+                        {getInitials(userDisplayName)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-96 p-0" align="end">
+                    <UserProfile />
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 border-0"
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <AuthForm mode="login" onClose={() => setAuthDialogOpen(false)} />
+                  </DialogContent>
+                </Dialog>
+              )}
+
+              {/* Mobile Menu Button */}
+              <div className="md:hidden">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="text-emerald-600"
+                >
+                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-orange-200 shadow-lg">
+            <div className="md:hidden absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-emerald-200 shadow-lg">
               <div className="px-4 py-6 space-y-4">
-                <button onClick={() => navigate('/menu')} className="block text-gray-700 hover:text-orange-600 transition-colors py-2">Menu</button>
-                <a href="#about" className="block text-gray-700 hover:text-orange-600 transition-colors py-2">About</a>
-                <a href="#gallery" className="block text-gray-700 hover:text-orange-600 transition-colors py-2">Gallery</a>
-                <Button 
-                  onClick={() => navigate('/menu')}
-                  className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 mt-4"
-                >
-                  <Zap className="mr-2 h-4 w-4" />
-                  Order Now
-                </Button>
+                <button onClick={() => navigate('/')} className="block text-emerald-700 hover:text-emerald-600 transition-colors py-2 font-medium">
+                  {language === 'en' ? 'Home' : 'الرئيسية'}
+                </button>
+                <button onClick={() => navigate('/menu')} className="block text-gray-700 hover:text-emerald-600 transition-colors py-2 font-medium">
+                  {language === 'en' ? 'Menu' : 'القائمة'}
+                </button>
+                <button onClick={() => navigate('/reservations')} className="block text-gray-700 hover:text-emerald-600 transition-colors py-2 font-medium">
+                  {language === 'en' ? 'Reservations' : 'الحجوزات'}
+                </button>
+                <a href="#about" className="block text-gray-700 hover:text-emerald-600 transition-colors py-2 font-medium">
+                  {language === 'en' ? 'About' : 'عن المطعم'}
+                </a>
               </div>
             </div>
           )}
@@ -192,21 +271,17 @@ const Index = () => {
       </nav>
 
       {/* Live Activity Banner */}
-      <div className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 text-white py-3 px-4 text-center relative overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white py-3 px-4 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10 animate-pulse"></div>
         <div className="relative z-10 flex items-center justify-center space-x-6 text-sm">
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
             <Eye className="h-4 w-4" />
-            <span className="font-medium">{viewerCount} people viewing now</span>
+            <span className="font-medium">{viewerCount} {language === 'en' ? 'people viewing now' : 'شخص يتصفح الآن'}</span>
           </div>
           <div className="hidden sm:flex items-center space-x-2">
             <Flame className="h-4 w-4 animate-bounce" />
-            <span className="font-medium">🔥 {recentOrder} just ordered!</span>
-          </div>
-          <div className="hidden lg:flex items-center space-x-2">
-            <TrendingUp className="h-4 w-4" />
-            <span className="font-medium">⚡ 15% off today only!</span>
+            <span className="font-medium">🔥 {recentOrder} {language === 'en' ? 'just ordered!' : 'تم طلبه للتو!'}</span>
           </div>
         </div>
       </div>
@@ -214,70 +289,76 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Professional Stats Section */}
+      {/* Quick Action Tiles */}
       <section className="py-16 bg-white/70 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl p-6 group-hover:scale-105 transition-transform duration-300">
-                <div className="bg-gradient-to-r from-orange-600 to-red-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300">
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-3xl font-bold text-gray-800 mb-2">50K+</h3>
-                <p className="text-gray-600 font-medium">Happy Customers</p>
-              </div>
-            </div>
-            <div className="text-center group">
-              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 group-hover:scale-105 transition-transform duration-300">
-                <div className="bg-gradient-to-r from-yellow-600 to-orange-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300">
-                  <Award className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-3xl font-bold text-gray-800 mb-2">25+</h3>
-                <p className="text-gray-600 font-medium">Years Experience</p>
-              </div>
-            </div>
-            <div className="text-center group">
-              <div className="bg-gradient-to-r from-green-100 to-yellow-100 rounded-2xl p-6 group-hover:scale-105 transition-transform duration-300">
-                <div className="bg-gradient-to-r from-green-600 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300">
-                  <Star className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-3xl font-bold text-gray-800 mb-2">4.9</h3>
-                <p className="text-gray-600 font-medium">Rating</p>
-              </div>
-            </div>
-            <div className="text-center group">
-              <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-6 group-hover:scale-105 transition-transform duration-300">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300">
-                  <Shield className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-3xl font-bold text-gray-800 mb-2">100%</h3>
-                <p className="text-gray-600 font-medium">Quality Assured</p>
-              </div>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              {language === 'en' ? 'Our Services' : 'خدماتنا'}
+            </h2>
+            <p className="text-gray-600 text-lg">
+              {language === 'en' ? 'Everything you need for the perfect dining experience' : 'كل ما تحتاجه لتجربة طعام مثالية'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {quickActions.map((action, index) => (
+              <Card 
+                key={index}
+                className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-emerald-50 overflow-hidden cursor-pointer"
+                onClick={action.onClick}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className={`bg-gradient-to-r ${action.gradient} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                    <action.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-800 group-hover:text-emerald-700 transition-colors">
+                    {action.title}
+                  </h3>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Interactive Features Grid */}
+      {/* Menu Highlights Section */}
+      <section id="menu" className="py-20 bg-white/50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              {language === 'en' ? 'Our Signature Dishes' : 'أطباقنا المميزة'}
+            </h2>
+            <p className="text-gray-600 text-lg">
+              {language === 'en' ? 'Authentic flavors that tell a story' : 'نكهات أصيلة تحكي قصة'}
+            </p>
+          </div>
+          <MenuShowcase />
+        </div>
+      </section>
+
+      {/* Interactive Features */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-              Experience the Magic
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              {language === 'en' ? 'Experience the Magic' : 'اختبر السحر'}
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Discover our unique features that make dining with us an unforgettable experience
+              {language === 'en' ? 'Discover our unique features that make dining with us an unforgettable experience' : 'اكتشف ميزاتنا الفريدة التي تجعل تناول الطعام معنا تجربة لا تُنسى'}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 animate-fade-in">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
             {/* Biryani Builder */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-white to-orange-50 hover:scale-[1.02] transform animate-slide-in-right">
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-white to-emerald-50 hover:scale-[1.02] transform">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-orange-700">
+                <CardTitle className="flex items-center space-x-2 text-emerald-700">
                   <Utensils className="h-6 w-6" />
-                  <span>Custom Biryani Builder</span>
-                  <Badge className="bg-orange-100 text-orange-700 border-orange-300">Popular</Badge>
+                  <span>{language === 'en' ? 'Custom Biryani Builder' : 'مصمم البرياني المخصص'}</span>
+                  <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300">
+                    {language === 'en' ? 'Popular' : 'شائع'}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -285,107 +366,36 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Professional Gallery Feature */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-white to-yellow-50 hover:scale-[1.02] transform">
+            {/* Live Kitchen */}
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-white to-amber-50 hover:scale-[1.02] transform">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-amber-700">
                   <Camera className="h-6 w-6" />
-                  <span>Chef's Gallery</span>
-                  <Badge className="bg-amber-100 text-amber-700 border-amber-300">Premium</Badge>
+                  <span>{language === 'en' ? 'Live from Our Kitchen' : 'مباشر من مطبخنا'}</span>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-red-600">LIVE</span>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="relative overflow-hidden rounded-lg group cursor-pointer animate-fade-in">
-                    <img 
-                      src="https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=300&fit=crop&auto=format" 
-                      alt="Signature Biryani"
-                      className="w-full h-32 object-cover transition-transform duration-700 group-hover:scale-125 group-hover:rotate-2"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
-                      <div className="absolute bottom-2 left-2 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        <p className="font-semibold text-sm">Signature Biryani</p>
-                        <p className="text-xs opacity-90">Chef's Special</p>
-                      </div>
-                      <div className="absolute top-2 right-2 transform translate-x-4 group-hover:translate-x-0 transition-transform duration-300 delay-100">
-                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-1">
-                          <Eye className="h-4 w-4 text-white" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative overflow-hidden rounded-lg group cursor-pointer animate-fade-in" style={{ animationDelay: '200ms' }}>
-                    <img 
-                      src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&auto=format" 
-                      alt="Tandoor Specialties"
-                      className="w-full h-32 object-cover transition-transform duration-700 group-hover:scale-125 group-hover:rotate-2"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
-                      <div className="absolute bottom-2 left-2 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        <p className="font-semibold text-sm">Tandoor Specials</p>
-                        <p className="text-xs opacity-90">Clay Oven Fresh</p>
-                      </div>
-                      <div className="absolute top-2 right-2 transform translate-x-4 group-hover:translate-x-0 transition-transform duration-300 delay-100">
-                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-1">
-                          <Eye className="h-4 w-4 text-white" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 text-center">
-                  <Button variant="outline" className="w-full hover:bg-amber-50 hover:border-amber-300 transition-all duration-500 hover:scale-105 transform group">
-                    <Camera className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform duration-300" />
-                    View Full Gallery
-                    <div className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  </Button>
-                </div>
+                <LiveKitchen />
               </CardContent>
             </Card>
           </div>
-
-          {/* Live Kitchen */}
-          <Card className="mb-16 border-0 bg-gradient-to-br from-white to-yellow-50 hover:shadow-2xl transition-all duration-500 hover:scale-[1.01] transform animate-scale-in">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-yellow-700">
-                <Camera className="h-6 w-6" />
-                <span>Live from Our Kitchen</span>
-                <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-red-600">LIVE</span>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LiveKitchen />
-            </CardContent>
-          </Card>
         </div>
       </section>
 
-      {/* Menu Showcase */}
-      <section id="menu" className="py-20 bg-white/50">
+      {/* Customer Testimonials */}
+      <section id="testimonials" className="py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-              Our Signature Dishes
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              {language === 'en' ? 'Wall of Fame' : 'جدار الشهرة'}
             </h2>
-            <p className="text-gray-600 text-lg">Authentic flavors that tell a story</p>
-          </div>
-          <MenuShowcase />
-        </div>
-      </section>
-
-      {/* Customer Wall */}
-      <section id="gallery" className="py-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-              Wall of Fame
-            </h2>
-            <p className="text-gray-600 text-lg">See what our happy customers are saying</p>
+            <p className="text-gray-600 text-lg">
+              {language === 'en' ? 'See what our happy customers are saying' : 'اطلع على آراء عملائنا السعداء'}
+            </p>
           </div>
           <CustomerWall />
         </div>
@@ -394,7 +404,7 @@ const Index = () => {
       {/* WhatsApp Ordering */}
       <WhatsAppOrder />
 
-      {/* Footer */}
+      {/* Keep existing footer unchanged */}
       <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 opacity-50"></div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">

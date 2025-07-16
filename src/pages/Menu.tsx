@@ -1,166 +1,202 @@
-
-import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import MenuHeader from '@/components/MenuHeader';
-import CategoryFilter from '@/components/CategoryFilter';
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { 
+  Search, 
+  ChevronsUpDown, 
+  Utensils, 
+  Flame, 
+  Leaf, 
+  ShoppingCart,
+  Plus
+} from 'lucide-react';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useToast } from "@/components/ui/use-toast"
+import { Badge } from "@/components/ui/badge"
+import { useCart } from '@/contexts/CartContext';
 import MenuItemCard from '@/components/MenuItemCard';
-import CartDrawer from '@/components/CartDrawer';
 import { supabase } from '@/integrations/supabase/client';
 
 interface MenuItem {
   id: string;
   name: string;
   name_ar: string;
-  description: string | null;
-  description_ar: string | null;
+  description: string;
+  description_ar: string;
   price: number;
-  image_url: string | null;
-  category_id: string | null;
+  image_url: string;
+  category: string;
   spice_level: number;
   rating: number;
-  is_featured: boolean;
-  is_available: boolean;
-  category?: {
-    name: string;
-    name_ar: string;
-  };
+  popular?: boolean;
 }
 
 const Menu = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState<string | null>(null);
+  const [spiceLevel, setSpiceLevel] = useState<number>(0);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  const { addItem } = useCart();
 
-  // Fetch menu items from database
-  const { data: menuItems = [], isLoading, error } = useQuery({
-    queryKey: ['menuItems'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('menu_items')
-        .select(`
-          *,
-          category:menu_categories(name, name_ar)
-        `)
-        .eq('is_available', true)
-        .order('created_at', { ascending: false });
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      if (error) {
-        console.error('Error fetching menu items:', error);
-        throw error;
+        const { data, error } = await supabase
+          .from('menu_items')
+          .select('*')
+          .order('name', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching menu items:', error);
+          setError('Failed to load menu items.');
+          return;
+        }
+
+        setItems(data || []);
+      } catch (err) {
+        console.error('Error fetching menu items:', err);
+        setError('Failed to load menu items.');
+      } finally {
+        setLoading(false);
       }
+    };
 
-      return data as MenuItem[];
-    },
+    fetchMenuItems();
+  }, []);
+
+  const categories = [
+    { label: 'All', value: null },
+    { label: 'Biryani', value: 'biryani' },
+    { label: 'Chicken', value: 'chicken' },
+    { label: 'Kebab', value: 'kebab' },
+    { label: 'Curry', value: 'curry' },
+    { label: 'Vegetarian', value: 'vegetarian' },
+  ];
+
+  const filteredItems = items.filter(item => {
+    const searchMatch = item.name.toLowerCase().includes(search.toLowerCase());
+    const categoryMatch = category ? item.category === category : true;
+    const spiceMatch = item.spice_level >= spiceLevel;
+    return searchMatch && categoryMatch && spiceMatch;
   });
 
-  // Fetch categories for filter
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('menu_categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching categories:', error);
-        throw error;
-      }
-
-      return data;
-    },
-  });
-
-  const filteredItems = useMemo(() => {
-    return menuItems.filter(item => {
-      const matchesCategory = selectedCategory === 'all' || 
-        (item.category && item.category.name.toLowerCase() === selectedCategory.toLowerCase());
-      const matchesSearch = searchQuery === '' || 
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.name_ar.includes(searchQuery) ||
-        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        `${item.spice_level} spice`.includes(searchQuery.toLowerCase());
-      
-      return matchesCategory && matchesSearch;
+  const handleAddToCart = (item: MenuItem) => {
+    addItem({
+      id: Number(item.id),
+      name: item.name,
+      nameAr: item.name_ar,
+      price: item.price,
+      image: item.image_url,
+      spiceLevel: item.spice_level
     });
-  }, [menuItems, selectedCategory, searchQuery]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-        <MenuHeader />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🍛</div>
-            <h3 className="text-xl font-semibold text-gray-600">Loading delicious dishes...</h3>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-        <MenuHeader />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-xl font-semibold text-red-600 mb-2">Error loading menu</h3>
-            <p className="text-gray-500">Please try refreshing the page</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    toast({
+      title: "Item added to cart!",
+      description: `${item.name} has been added to your cart.`,
+    })
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      <MenuHeader />
-      
-      <CategoryFilter
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        categories={categories}
-      />
-
-      {/* Menu Items Grid */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No items found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredItems.map(item => (
-                <MenuItemCard 
-                  key={item.id} 
-                  item={{
-                    id: item.id,
-                    name: item.name,
-                    nameAr: item.name_ar,
-                    description: item.description || '',
-                    descriptionAr: item.description_ar || '',
-                    price: Number(item.price),
-                    image: item.image_url || '🍛',
-                    category: item.category?.name.toLowerCase() || 'extras',
-                    spiceLevel: item.spice_level,
-                    rating: Number(item.rating),
-                    popular: item.is_featured
-                  }} 
-                />
-              ))}
-            </div>
-          )}
+    <div className="container py-12">
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4 mb-8">
+        <div className="relative w-full md:w-1/3">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          <Input
+            type="search"
+            placeholder="Search menu items..."
+            className="pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring focus:ring-emerald-200"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-      </section>
 
-      <CartDrawer />
+        <div className="w-full md:w-1/3">
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between text-sm"
+              >
+                {category ?
+                  categories.find((c) => c.value === category)?.label :
+                  "Select Category"}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandList>
+                  <CommandInput placeholder="Search category..." />
+                  <CommandEmpty>No category found.</CommandEmpty>
+                  <CommandGroup>
+                    {categories.map((category) => (
+                      <CommandItem
+                        key={category.value}
+                        value={category.label}
+                        onSelect={() => {
+                          setCategory(category.value);
+                          setOpen(false);
+                        }}
+                      >
+                        <Utensils className="mr-2 h-4 w-4" />
+                        {category.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="w-full md:w-1/3">
+          <div className="flex items-center space-x-3">
+            <Flame className="h-5 w-5 text-orange-500" />
+            <label htmlFor="spiceLevel" className="text-sm font-medium text-gray-700">
+              Spice Level: {spiceLevel}
+            </label>
+          </div>
+          <Slider
+            id="spiceLevel"
+            defaultValue={[0]}
+            max={3}
+            step={1}
+            className="w-full"
+            onValueChange={(value) => setSpiceLevel(value[0])}
+          />
+        </div>
+      </div>
+
+      {loading && <p className="text-center text-gray-600">Loading menu items...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
+      {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map(item => (
+              <MenuItemCard 
+                key={item.id} 
+                item={{
+                  ...item,
+                  id: Number(item.id), // Convert string to number for compatibility
+                  spiceLevel: item.spice_level || 0,
+                  rating: Number(item.rating) || 0
+                }} 
+              />
+            ))}
+          </div>
+      )}
     </div>
   );
 };

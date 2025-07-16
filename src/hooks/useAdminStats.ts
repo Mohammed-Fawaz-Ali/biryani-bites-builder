@@ -1,126 +1,90 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface AdminStats {
+interface AdminStats {
   totalOrders: number;
-  totalUsers: number;
-  totalReservations: number;
   totalRevenue: number;
+  totalCustomers: number;
   pendingOrders: number;
-  completedOrders: number;
-  cancelledOrders: number;
-  newUsersToday: number;
-  loading: boolean;
-  error?: Error;
+  todayOrders: number;
+  activeReservations: number;
 }
 
-export function useAdminStats(): AdminStats {
+export const useAdminStats = () => {
   const [stats, setStats] = useState<AdminStats>({
     totalOrders: 0,
-    totalUsers: 0,
-    totalReservations: 0,
     totalRevenue: 0,
+    totalCustomers: 0,
     pendingOrders: 0,
-    completedOrders: 0,
-    cancelledOrders: 0,
-    newUsersToday: 0,
-    loading: true,
+    todayOrders: 0,
+    activeReservations: 0,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        setStats(prev => ({ ...prev, loading: true, error: undefined }));
-
-        // Fetch orders stats
-        const { data: ordersData, error: ordersError } = await supabase
+        setLoading(true);
+        
+        // Fetch total orders
+        const { count: totalOrders } = await supabase
           .from('orders')
-          .select('status, total_amount, created_at');
+          .select('*', { count: 'exact', head: true });
 
-        if (ordersError) throw ordersError;
+        // Fetch total revenue
+        const { data: revenueData } = await supabase
+          .from('orders')
+          .select('total_amount')
+          .eq('payment_status', 'completed');
 
-        // Fetch users stats
-        const { data: usersData, error: usersError } = await supabase
+        const totalRevenue = revenueData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+
+        // Fetch total customers
+        const { count: totalCustomers } = await supabase
           .from('users')
-          .select('id, created_at');
+          .select('*', { count: 'exact', head: true })
+          .eq('user_type', 'customer');
 
-        if (usersError) throw usersError;
+        // Fetch pending orders
+        const { count: pendingOrders } = await supabase
+          .from('orders')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending');
 
-        // Fetch reservations stats
-        const { data: reservationsData, error: reservationsError } = await supabase
+        // Fetch today's orders
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const { count: todayOrders } = await supabase
+          .from('orders')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', today.toISOString());
+
+        // Fetch active reservations
+        const { count: activeReservations } = await supabase
           .from('reservations')
-          .select('id, status');
-
-        if (reservationsError) throw reservationsError;
-
-        // Calculate stats
-        const totalOrders = ordersData?.length || 0;
-        const totalUsers = usersData?.length || 0;
-        const totalReservations = reservationsData?.length || 0;
-        
-        const totalRevenue = ordersData?.reduce((sum, order) => 
-          sum + (parseFloat(order.total_amount) || 0), 0) || 0;
-
-        const pendingOrders = ordersData?.filter(order => 
-          ['pending', 'confirmed', 'preparing'].includes(order.status)).length || 0;
-        
-        const completedOrders = ordersData?.filter(order => 
-          order.status === 'delivered').length || 0;
-        
-        const cancelledOrders = ordersData?.filter(order => 
-          order.status === 'cancelled').length || 0;
-
-        const today = new Date().toISOString().split('T')[0];
-        const newUsersToday = usersData?.filter(user => 
-          user.created_at?.startsWith(today)).length || 0;
+          .select('*', { count: 'exact', head: true })
+          .in('status', ['pending', 'confirmed']);
 
         setStats({
-          totalOrders,
-          totalUsers,
-          totalReservations,
+          totalOrders: totalOrders || 0,
           totalRevenue,
-          pendingOrders,
-          completedOrders,
-          cancelledOrders,
-          newUsersToday,
-          loading: false,
+          totalCustomers: totalCustomers || 0,
+          pendingOrders: pendingOrders || 0,
+          todayOrders: todayOrders || 0,
+          activeReservations: activeReservations || 0,
         });
-
-      } catch (error) {
-        console.error('Error fetching admin stats:', error);
-        setStats(prev => ({ 
-          ...prev, 
-          loading: false, 
-          error: error as Error 
-        }));
+      } catch (err) {
+        console.error('Error fetching admin stats:', err);
+        setError('Failed to fetch statistics');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchStats();
-
-    // Set up real-time subscription for orders
-    const ordersSubscription = supabase
-      .channel('admin-orders')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'orders' },
-        () => fetchStats()
-      )
-      .subscribe();
-
-    // Set up real-time subscription for users
-    const usersSubscription = supabase
-      .channel('admin-users')
-      .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'users' },
-        () => fetchStats()
-      )
-      .subscribe();
-
-    return () => {
-      ordersSubscription.unsubscribe();
-      usersSubscription.unsubscribe();
-    };
   }, []);
 
-  return stats;
-}
+  return { stats, loading, error };
+};

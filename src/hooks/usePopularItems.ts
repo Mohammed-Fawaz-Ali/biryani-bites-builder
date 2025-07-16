@@ -1,107 +1,89 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface PopularItem {
+interface PopularItem {
   id: string;
   name: string;
-  name_ar: string;
-  category: string;
-  total_orders: number;
-  total_revenue: number;
-  rating: number;
+  nameAr: string;
+  price: number;
+  image: string;
+  orders: number;
+  revenue: number;
 }
 
-export function usePopularItems(limit: number = 5): {
-  data: PopularItem[];
-  loading: boolean;
-  error?: Error;
-} {
-  const [items, setItems] = useState<PopularItem[]>([]);
+export const usePopularItems = () => {
+  const [popularItems, setPopularItems] = useState<PopularItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPopularItems = async () => {
       try {
         setLoading(true);
-        setError(undefined);
-
-        // Query to get popular items based on order frequency
-        const { data, error: fetchError } = await supabase
+        
+        // Get order items with their menu item details
+        const { data: orderItemsData, error: orderItemsError } = await supabase
           .from('order_items')
           .select(`
             menu_item_id,
-            item_name,
-            item_name_ar,
             quantity,
             total_price,
-            menu_item:menu_items(
-              rating,
-              category:menu_categories(name)
+            menu_items (
+              id,
+              name,
+              name_ar,
+              price,
+              image_url
             )
           `);
 
-        if (fetchError) throw fetchError;
+        if (orderItemsError) {
+          throw orderItemsError;
+        }
 
-        // Aggregate data by menu item
-        const itemStats = new Map<string, {
-          name: string;
-          name_ar: string;
-          category: string;
-          total_orders: number;
-          total_revenue: number;
-          rating: number;
-        }>();
+        // Group by menu item and calculate totals
+        const itemStats = new Map();
 
-        data?.forEach(item => {
-          const key = item.menu_item_id || item.item_name;
-          const existing = itemStats.get(key);
+        orderItemsData?.forEach(item => {
+          if (!item.menu_items || !item.menu_item_id) return;
           
-          if (existing) {
-            existing.total_orders += item.quantity;
-            existing.total_revenue += parseFloat(item.total_price);
+          const menuItem = item.menu_items;
+          const key = item.menu_item_id;
+          
+          if (itemStats.has(key)) {
+            const existing = itemStats.get(key);
+            existing.orders += item.quantity;
+            existing.revenue += Number(item.total_price);
           } else {
             itemStats.set(key, {
-              name: item.item_name,
-              name_ar: item.item_name_ar || '',
-              category: item.menu_item?.category?.name || 'Unknown',
-              total_orders: item.quantity,
-              total_revenue: parseFloat(item.total_price),
-              rating: item.menu_item?.rating || 0,
+              id: key,
+              name: menuItem.name,
+              nameAr: menuItem.name_ar,
+              price: Number(menuItem.price),
+              image: menuItem.image_url || '🍛',
+              orders: item.quantity,
+              revenue: Number(item.total_price)
             });
           }
         });
 
-        // Convert to array and sort by total orders
-        const popularItems = Array.from(itemStats.entries())
-          .map(([id, stats]) => ({ id, ...stats }))
-          .sort((a, b) => b.total_orders - a.total_orders)
-          .slice(0, limit);
+        // Convert to array and sort by orders
+        const popularItems = Array.from(itemStats.values())
+          .sort((a, b) => b.orders - a.orders)
+          .slice(0, 10);
 
-        setItems(popularItems);
+        setPopularItems(popularItems);
       } catch (err) {
         console.error('Error fetching popular items:', err);
-        setError(err as Error);
+        setError('Failed to fetch popular items');
       } finally {
         setLoading(false);
       }
     };
 
     fetchPopularItems();
+  }, []);
 
-    // Set up real-time subscription
-    const subscription = supabase
-      .channel('popular-items')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'order_items' },
-        () => fetchPopularItems()
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [limit]);
-
-  return { data: items, loading, error };
-}
+  return { popularItems, loading, error };
+};
