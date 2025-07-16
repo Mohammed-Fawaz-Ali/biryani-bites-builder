@@ -1,62 +1,19 @@
 
-import { useState } from 'react';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import AdminDashboard from '@/components/admin/AdminDashboard';
-import { MenuManagement } from '@/components/admin/MenuManagement';
-import { OrderManagement } from '@/components/admin/OrderManagement';
-import { ReservationManagement } from '@/components/admin/ReservationManagement';
-import { CustomerManagement } from '@/components/admin/CustomerManagement';
-import { Analytics } from '@/components/admin/Analytics';
-import { AdminSettings } from '@/components/admin/AdminSettings';
-import { SidebarProvider } from '@/components/ui/sidebar';
-
-export type AdminSection = 
-  | 'dashboard' 
-  | 'menu' 
-  | 'orders' 
-  | 'reservations' 
-  | 'customers' 
-  | 'analytics' 
-  | 'settings';
+import React from 'react';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import EnhancedAdminDashboard from '@/components/admin/EnhancedAdminDashboard';
+import BackButton from '@/components/BackButton';
 
 const Admin = () => {
-  const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'dashboard':
-        return <AdminDashboard />;
-      case 'menu':
-        return <MenuManagement />;
-      case 'orders':
-        return <OrderManagement />;
-      case 'reservations':
-        return <ReservationManagement />;
-      case 'customers':
-        return <CustomerManagement />;
-      case 'analytics':
-        return <Analytics />;
-      case 'settings':
-        return <AdminSettings />;
-      default:
-        return <AdminDashboard />;
-    }
-  };
-
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AdminSidebar 
-          activeSection={activeSection} 
-          onSectionChange={setActiveSection} 
-        />
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
-            {renderContent()}
-          </div>
-        </main>
+    <ProtectedRoute requireAdmin={true}>
+      <div className="min-h-screen bg-sand">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <BackButton to="/" />
+          <EnhancedAdminDashboard />
+        </div>
       </div>
-    </SidebarProvider>
+    </ProtectedRoute>
   );
 };
 

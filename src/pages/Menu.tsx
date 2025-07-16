@@ -1,165 +1,197 @@
 
-import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Plus, Search, Filter, Flame, Leaf, Star } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import MenuHeader from '@/components/MenuHeader';
 import CategoryFilter from '@/components/CategoryFilter';
 import MenuItemCard from '@/components/MenuItemCard';
 import CartDrawer from '@/components/CartDrawer';
-import { supabase } from '@/integrations/supabase/client';
-
-interface MenuItem {
-  id: string;
-  name: string;
-  name_ar: string;
-  description: string | null;
-  description_ar: string | null;
-  price: number;
-  image_url: string | null;
-  category_id: string | null;
-  spice_level: number;
-  rating: number;
-  is_featured: boolean;
-  is_available: boolean;
-  category?: {
-    name: string;
-    name_ar: string;
-  };
-}
+import CustomizeModal from '@/components/CustomizeModal';
+import { useCart } from '@/contexts/CartContext';
+import BackButton from '@/components/BackButton';
 
 const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [customizeModalOpen, setCustomizeModalOpen] = useState(false);
+  const { addItem } = useCart();
 
-  // Fetch menu items from database
-  const { data: menuItems = [], isLoading, error } = useQuery({
-    queryKey: ['menuItems'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('menu_items')
-        .select(`
-          *,
-          category:menu_categories(name, name_ar)
-        `)
-        .eq('is_available', true)
-        .order('created_at', { ascending: false });
+  const categories = [
+    { id: 'all', name: 'All Items', nameAr: 'جميع الأصناف' },
+    { id: 'traditional', name: 'Traditional', nameAr: 'تقليدي' },
+    { id: 'grills', name: 'Grills', nameAr: 'مشاوي' },
+    { id: 'appetizers', name: 'Appetizers', nameAr: 'مقبلات' },
+    { id: 'desserts', name: 'Desserts', nameAr: 'حلويات' },
+    { id: 'beverages', name: 'Beverages', nameAr: 'مشروبات' }
+  ];
 
-      if (error) {
-        console.error('Error fetching menu items:', error);
-        throw error;
-      }
-
-      return data as MenuItem[];
+  const menuItems = [
+    {
+      id: 1,
+      name: "Kabsa Royale",
+      nameAr: "كبسة ملكية",
+      description: "Traditional lamb kabsa with aromatic spices",
+      price: 85,
+      image: "🍛",
+      category: "traditional",
+      spiceLevel: 2,
+      isPopular: true,
+      tags: ["Traditional", "Lamb", "Rice"]
     },
+    {
+      id: 2,
+      name: "Mandi Special",
+      nameAr: "مندي مميز", 
+      description: "Tender chicken mandi with fragrant rice",
+      price: 65,
+      image: "🍗",
+      category: "traditional",
+      spiceLevel: 1,
+      isPopular: true,
+      tags: ["Traditional", "Chicken", "Rice"]
+    },
+    {
+      id: 3,
+      name: "Mixed Grill",
+      nameAr: "مشاوي مشكلة",
+      description: "Assorted grilled meats with traditional sides",
+      price: 120,
+      image: "🥩",
+      category: "grills", 
+      spiceLevel: 2,
+      isPopular: true,
+      tags: ["Grilled", "Mixed Meats", "Traditional"]
+    },
+    {
+      id: 4,
+      name: "Hummus Platter",
+      nameAr: "طبق الحمص",
+      description: "Creamy hummus with olive oil and pita bread",
+      price: 25,
+      image: "🥙",
+      category: "appetizers",
+      spiceLevel: 0,
+      isVegetarian: true,
+      tags: ["Vegetarian", "Appetizer", "Traditional"]
+    },
+    {
+      id: 5,
+      name: "Baklava Selection",
+      nameAr: "تشكيلة البقلاوة",
+      description: "Assorted honey-sweetened pastries",
+      price: 35,
+      image: "🥮",
+      category: "desserts",
+      spiceLevel: 0,
+      tags: ["Sweet", "Traditional", "Pastry"]
+    },
+    {
+      id: 6,
+      name: "Traditional Tea",
+      nameAr: "شاي تقليدي",
+      description: "Authentic Saudi tea blend with cardamom",
+      price: 15,
+      image: "🍵",
+      category: "beverages",
+      spiceLevel: 0,
+      tags: ["Tea", "Traditional", "Hot"]
+    }
+  ];
+
+  const filteredItems = menuItems.filter(item => {
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.nameAr.includes(searchTerm) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
-  // Fetch categories for filter
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('menu_categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
+  const handleCustomize = (item: any) => {
+    setSelectedItem(item);
+    setCustomizeModalOpen(true);
+  };
 
-      if (error) {
-        console.error('Error fetching categories:', error);
-        throw error;
-      }
-
-      return data;
-    },
-  });
-
-  const filteredItems = useMemo(() => {
-    return menuItems.filter(item => {
-      const matchesCategory = selectedCategory === 'all' || 
-        (item.category && item.category.name.toLowerCase() === selectedCategory.toLowerCase());
-      const matchesSearch = searchQuery === '' || 
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.name_ar.includes(searchQuery) ||
-        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        `${item.spice_level} spice`.includes(searchQuery.toLowerCase());
-      
-      return matchesCategory && matchesSearch;
+  const handleAddToCart = (item: any, customizations?: any) => {
+    addItem({
+      id: item.id,
+      name: item.name,
+      nameAr: item.nameAr,
+      price: customizations?.totalPrice || item.price,
+      image: item.image,
+      spiceLevel: customizations?.spiceLevel || item.spiceLevel,
+      customizations: customizations || null
     });
-  }, [menuItems, selectedCategory, searchQuery]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-        <MenuHeader />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🍛</div>
-            <h3 className="text-xl font-semibold text-gray-600">Loading delicious dishes...</h3>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-        <MenuHeader />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-xl font-semibold text-red-600 mb-2">Error loading menu</h3>
-            <p className="text-gray-500">Please try refreshing the page</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    setCustomizeModalOpen(false);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      <MenuHeader />
-      
-      <CategoryFilter
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        categories={categories}
+    <div className="min-h-screen bg-sand">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-emerald/20">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <BackButton to="/" />
+          <MenuHeader />
+          
+          {/* Search and Filter */}
+          <div className="mt-6 flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald/50 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search menu items..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 border-emerald/30 focus:border-emerald"
+              />
+            </div>
+            <Button variant="outline" className="border-emerald text-emerald hover:bg-emerald hover:text-white">
+              <Filter className="mr-2 h-4 w-4" />
+              Filters
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <CategoryFilter
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+        />
+
+        {/* Menu Items Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          {filteredItems.map((item) => (
+            <MenuItemCard
+              key={item.id}
+              item={item}
+              onCustomize={handleCustomize}
+              onAddToCart={(item) => handleAddToCart(item)}
+            />
+          ))}
+        </div>
+
+        {filteredItems.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-emerald/60 text-lg">No items found matching your search.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Customize Modal */}
+      <CustomizeModal
+        item={selectedItem}
+        isOpen={customizeModalOpen}
+        onClose={() => setCustomizeModalOpen(false)}
+        onAddToCart={handleAddToCart}
       />
 
-      {/* Menu Items Grid */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No items found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredItems.map(item => (
-                <MenuItemCard 
-                  key={item.id} 
-                  item={{
-                    id: Number(item.id),
-                    name: item.name,
-                    nameAr: item.name_ar,
-                    description: item.description || '',
-                    descriptionAr: item.description_ar || '',
-                    price: Number(item.price),
-                    image: item.image_url || '🍛',
-                    category: item.category?.name.toLowerCase() || 'extras',
-                    spiceLevel: item.spice_level,
-                    rating: Number(item.rating),
-                    popular: item.is_featured
-                  }} 
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
+      {/* Cart Drawer */}
       <CartDrawer />
     </div>
   );

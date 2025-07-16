@@ -4,311 +4,221 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, Users, Clock, MapPin, QrCode, CheckCircle } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar, Clock, Users, Phone, User, MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import BackButton from '@/components/BackButton';
 
 const Reservations = () => {
-  const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedTime, setSelectedTime] = useState('');
-  const [partySize, setPartySize] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [specialRequests, setSpecialRequests] = useState('');
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [reservationNumber, setReservationNumber] = useState('');
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    date: '',
+    time: '',
+    guests: '',
+    specialRequests: ''
+  });
 
-  const timeSlots = [
-    '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM',
-    '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM',
-    '8:30 PM', '9:00 PM', '9:30 PM', '10:00 PM'
-  ];
-
-  const handleReservation = async () => {
-    if (!selectedDate || !selectedTime || !partySize || !customerName || !customerPhone) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.name || !formData.phone || !formData.date || !formData.time || !formData.guests) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
       return;
     }
 
-    // Generate reservation number
-    const resNumber = `RES-${Date.now().toString().slice(-6)}`;
-    setReservationNumber(resNumber);
-    setIsConfirmed(true);
+    // Simulate reservation submission
+    toast({
+      title: "Reservation Confirmed!",
+      description: `Your table for ${formData.guests} on ${formData.date} at ${formData.time} has been confirmed.`,
+    });
+
+    // Reset form
+    setFormData({
+      name: '',
+      phone: '',
+      date: '',
+      time: '',
+      guests: '',
+      specialRequests: ''
+    });
   };
 
-  if (isConfirmed) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-gold/10">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b border-emerald-100">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="text-emerald-700 hover:bg-emerald-50"
-            >
-              ← Back to Home
-            </Button>
-          </div>
-        </div>
-
-        {/* Confirmation */}
-        <div className="max-w-2xl mx-auto px-4 py-12">
-          <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-8 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-10 h-10 text-white" />
-              </div>
-              
-              <h1 className="text-3xl font-bold text-emerald-800 mb-2">
-                Reservation Confirmed!
-              </h1>
-              <p className="text-lg text-emerald-700 mb-2 font-arabic">
-                تم تأكيد حجزك
-              </p>
-              
-              <div className="bg-emerald-50 rounded-lg p-6 my-8">
-                <h2 className="text-xl font-semibold text-emerald-800 mb-4">Reservation Details</h2>
-                <div className="space-y-3 text-left">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Reservation #:</span>
-                    <span className="font-semibold text-emerald-700">{reservationNumber}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Name:</span>
-                    <span className="font-semibold">{customerName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Date:</span>
-                    <span className="font-semibold">{selectedDate && format(selectedDate, 'PPP')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Time:</span>
-                    <span className="font-semibold">{selectedTime}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Party Size:</span>
-                    <span className="font-semibold">{partySize} guests</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* QR Code */}
-              <div className="bg-white p-8 rounded-lg border-2 border-emerald-200 mb-6">
-                <QrCode className="w-32 h-32 mx-auto text-emerald-600 mb-4" />
-                <p className="text-sm text-gray-600">Show this QR code when you arrive</p>
-              </div>
-
-              <div className="space-y-4">
-                <Button
-                  onClick={() => navigate('/menu')}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white py-3"
-                >
-                  Pre-Order Your Meal
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/')}
-                  className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                >
-                  Back to Home
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-gold/10">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-emerald-100">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="text-emerald-700 hover:bg-emerald-50"
-          >
-            ← Back to Home
-          </Button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="min-h-screen bg-sand">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <BackButton to="/" />
+        
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-emerald-800 mb-4">
-            Reserve Your Table
-          </h1>
-          <p className="text-lg text-emerald-700 font-arabic">
-            احجز طاولتك في البيت
-          </p>
-          <p className="text-gray-600 mt-2">
-            Experience authentic Saudi cuisine in our warm, welcoming atmosphere
-          </p>
+          <h1 className="text-4xl font-bold text-emerald mb-4">Reserve Your Table</h1>
+          <p className="text-emerald/70 text-lg font-arabic mb-2">احجز طاولتك</p>
+          <p className="text-emerald/70">Experience authentic Saudi cuisine in our elegant dining room</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Reservation Form */}
-          <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-emerald-800 flex items-center space-x-2">
-                <MapPin className="w-5 h-5" />
-                <span>Reservation Details</span>
+          <Card className="bg-white rounded-3xl shadow-lg">
+            <CardHeader className="bg-emerald text-white rounded-t-3xl">
+              <CardTitle className="text-xl flex items-center">
+                <Calendar className="mr-2 h-5 w-5" />
+                Make a Reservation
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Date Selection */}
-              <div className="space-y-2">
-                <Label className="text-emerald-700 font-semibold">Select Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal border-emerald-200",
-                        !selectedDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                      className="pointer-events-auto"
+            <CardContent className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name" className="text-emerald font-medium">Full Name *</Label>
+                    <div className="relative mt-2">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald/50 h-4 w-4" />
+                      <Input
+                        id="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        className="pl-10 border-emerald/30 focus:border-emerald"
+                        placeholder="Enter your full name"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="phone" className="text-emerald font-medium">Phone Number *</Label>
+                    <div className="relative mt-2">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald/50 h-4 w-4" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        className="pl-10 border-emerald/30 focus:border-emerald"
+                        placeholder="+966 XX XXX XXXX"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="date" className="text-emerald font-medium">Date *</Label>
+                    <div className="relative mt-2">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald/50 h-4 w-4" />
+                      <Input
+                        id="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => handleInputChange('date', e.target.value)}
+                        className="pl-10 border-emerald/30 focus:border-emerald"
+                        min={new Date().toISOString().split('T')[0]}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="time" className="text-emerald font-medium">Time *</Label>
+                    <div className="relative mt-2">
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald/50 h-4 w-4" />
+                      <Input
+                        id="time"
+                        type="time"
+                        value={formData.time}
+                        onChange={(e) => handleInputChange('time', e.target.value)}
+                        className="pl-10 border-emerald/30 focus:border-emerald"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="guests" className="text-emerald font-medium">Number of Guests *</Label>
+                  <div className="relative mt-2">
+                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald/50 h-4 w-4" />
+                    <Input
+                      id="guests"
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={formData.guests}
+                      onChange={(e) => handleInputChange('guests', e.target.value)}
+                      className="pl-10 border-emerald/30 focus:border-emerald"
+                      placeholder="Number of guests"
+                      required
                     />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Time Selection */}
-              <div className="space-y-2">
-                <Label className="text-emerald-700 font-semibold">Select Time</Label>
-                <Select value={selectedTime} onValueChange={setSelectedTime}>
-                  <SelectTrigger className="border-emerald-200">
-                    <SelectValue placeholder="Choose time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{time}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Party Size */}
-              <div className="space-y-2">
-                <Label className="text-emerald-700 font-semibold">Party Size</Label>
-                <Select value={partySize} onValueChange={setPartySize}>
-                  <SelectTrigger className="border-emerald-200">
-                    <SelectValue placeholder="Number of guests" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1,2,3,4,5,6,7,8,9,10].map((size) => (
-                      <SelectItem key={size} value={size.toString()}>
-                        <div className="flex items-center space-x-2">
-                          <Users className="w-4 h-4" />
-                          <span>{size} {size === 1 ? 'guest' : 'guests'}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Customer Details */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-emerald-700 font-semibold">Full Name</Label>
-                  <Input
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="border-emerald-200 focus:border-emerald-500"
-                  />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-emerald-700 font-semibold">Phone Number</Label>
-                  <Input
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="+966 50 123 4567"
-                    className="border-emerald-200 focus:border-emerald-500"
-                  />
+                <div>
+                  <Label htmlFor="specialRequests" className="text-emerald font-medium">Special Requests</Label>
+                  <div className="relative mt-2">
+                    <MessageSquare className="absolute left-3 top-3 text-emerald/50 h-4 w-4" />
+                    <Textarea
+                      id="specialRequests"
+                      value={formData.specialRequests}
+                      onChange={(e) => handleInputChange('specialRequests', e.target.value)}
+                      className="pl-10 border-emerald/30 focus:border-emerald min-h-[100px]"
+                      placeholder="Any special requests or dietary requirements..."
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-emerald-700 font-semibold">Special Requests (Optional)</Label>
-                  <Input
-                    value={specialRequests}
-                    onChange={(e) => setSpecialRequests(e.target.value)}
-                    placeholder="Any special arrangements or dietary requirements"
-                    className="border-emerald-200 focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <Button
-                onClick={handleReservation}
-                disabled={!selectedDate || !selectedTime || !partySize || !customerName || !customerPhone}
-                className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white py-3 text-lg font-semibold"
-              >
-                Confirm Reservation
-              </Button>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-emerald hover:bg-emerald/90 text-white py-3 text-lg rounded-full transition-all duration-300 hover:scale-105"
+                >
+                  Confirm Reservation
+                </Button>
+              </form>
             </CardContent>
           </Card>
 
           {/* Restaurant Info */}
           <div className="space-y-6">
-            <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-emerald-800 mb-4">Restaurant Information</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="w-5 h-5 text-emerald-600 mt-1" />
-                    <div>
-                      <p className="font-semibold text-gray-800">Location</p>
-                      <p className="text-gray-600">123 King Fahd Road, Riyadh, Saudi Arabia</p>
-                    </div>
+            <Card className="bg-white rounded-3xl shadow-lg">
+              <CardContent className="p-8">
+                <h3 className="text-xl font-bold text-emerald mb-4">Restaurant Information</h3>
+                <div className="space-y-4 text-emerald/70">
+                  <div>
+                    <h4 className="font-semibold text-emerald">Operating Hours</h4>
+                    <p>Sunday - Thursday: 12:00 PM - 11:00 PM</p>
+                    <p>Friday - Saturday: 12:00 PM - 12:00 AM</p>
                   </div>
-                  <div className="flex items-start space-x-3">
-                    <Clock className="w-5 h-5 text-emerald-600 mt-1" />
-                    <div>
-                      <p className="font-semibold text-gray-800">Hours</p>
-                      <p className="text-gray-600">Daily: 12:00 PM - 10:30 PM</p>
-                    </div>
+                  <div>
+                    <h4 className="font-semibold text-emerald">Location</h4>
+                    <p>King Fahd Road, Riyadh, Saudi Arabia</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-emerald">Contact</h4>
+                    <p>Phone: +966 11 234 5678</p>
+                    <p>Email: reservations@albayt.sa</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-4">Why Choose Al-Bayt?</h3>
-                <ul className="space-y-2">
-                  <li>• Authentic Saudi family recipes</li>
-                  <li>• Fresh ingredients daily</li>
-                  <li>• Traditional atmosphere</li>
-                  <li>• Excellent service</li>
-                  <li>• Family-friendly environment</li>
+            <Card className="bg-emerald text-white rounded-3xl shadow-lg">
+              <CardContent className="p-8">
+                <h3 className="text-xl font-bold mb-4">Reservation Policy</h3>
+                <ul className="space-y-2 text-white/90">
+                  <li>• Reservations are confirmed within 30 minutes</li>
+                  <li>• Tables are held for 15 minutes past reservation time</li>
+                  <li>• Cancellations must be made 2 hours in advance</li>
+                  <li>• Large groups (8+) may require a deposit</li>
+                  <li>• Special dietary requirements can be accommodated</li>
                 </ul>
               </CardContent>
             </Card>
