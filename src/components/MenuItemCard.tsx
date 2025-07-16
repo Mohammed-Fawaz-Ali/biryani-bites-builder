@@ -40,7 +40,6 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
       price: customizations?.totalPrice || itemData.price,
       image: itemData.image,
       spiceLevel: customizations?.spiceLevel || itemData.spiceLevel,
-      quantity: customizations?.quantity || 1,
       customizations: customizations || null
     });
 
