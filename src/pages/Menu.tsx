@@ -141,7 +141,7 @@ const Menu = () => {
                 <MenuItemCard 
                   key={item.id} 
                   item={{
-                    id: item.id,
+                    id: Number(item.id),
                     name: item.name,
                     nameAr: item.name_ar,
                     description: item.description || '',

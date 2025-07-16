@@ -132,7 +132,7 @@ const Checkout = () => {
       // Create order items
       const orderItems = items.map(item => ({
         order_id: order.id,
-        menu_item_id: item.id,
+        menu_item_id: item.id.toString(),
         item_name: item.name,
         item_name_ar: item.nameAr,
         quantity: item.quantity,

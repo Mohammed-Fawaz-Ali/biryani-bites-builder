@@ -59,7 +59,7 @@ export function useAdminStats(): AdminStats {
         const totalReservations = reservationsData?.length || 0;
         
         const totalRevenue = ordersData?.reduce((sum, order) => 
-          sum + (parseFloat(order.total_amount) || 0), 0) || 0;
+          sum + (parseFloat(order.total_amount.toString()) || 0), 0) || 0;
 
         const pendingOrders = ordersData?.filter(order => 
           ['pending', 'confirmed', 'preparing'].includes(order.status)).length || 0;
