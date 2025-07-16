@@ -4,6 +4,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import EnhancedAdminDashboard from '@/components/admin/EnhancedAdminDashboard';
 import BackButton from '@/components/BackButton';
 
+export type AdminSection = 'dashboard' | 'menu' | 'orders' | 'reservations' | 'customers' | 'analytics' | 'settings';
+
 const Admin = () => {
   return (
     <ProtectedRoute requireAdmin={true}>

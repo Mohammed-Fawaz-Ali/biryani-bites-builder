@@ -16,6 +16,7 @@ interface CartContextType {
   items: CartItem[];
   totalItems: number;
   totalPrice: number;
+  total: number; // Adding the missing total property
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
@@ -40,6 +41,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const total = totalPrice; // Adding the total property that references totalPrice
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
@@ -83,6 +85,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       items,
       totalItems,
       totalPrice,
+      total,
       addItem,
       removeItem,
       updateQuantity,

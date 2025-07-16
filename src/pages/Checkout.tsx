@@ -13,12 +13,33 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '@/components/BackButton';
 
+interface CustomerInfo {
+  name: string;
+  phone: string;
+  email: string;
+}
+
+interface DeliveryAddress {
+  street: string;
+  building: string;
+  district: string;
+  city: string;
+  notes: string;
+}
+
+interface OrderData {
+  customerInfo: CustomerInfo;
+  deliveryAddress: DeliveryAddress;
+  paymentMethod: string;
+  orderNotes: string;
+}
+
 const Checkout = () => {
   const { items, total, clearCart } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const [orderData, setOrderData] = useState({
+  const [orderData, setOrderData] = useState<OrderData>({
     customerInfo: {
       name: '',
       phone: '',
@@ -39,11 +60,11 @@ const Checkout = () => {
   const tax = total * 0.15; // 15% VAT
   const finalTotal = total + deliveryFee + tax;
 
-  const handleInputChange = (section: string, field: string, value: string) => {
+  const handleInputChange = (section: keyof OrderData, field: string, value: string) => {
     setOrderData(prev => ({
       ...prev,
       [section]: {
-        ...prev[section as keyof typeof prev],
+        ...prev[section],
         [field]: value
       }
     }));

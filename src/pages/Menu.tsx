@@ -13,33 +13,57 @@ import CustomizeModal from '@/components/CustomizeModal';
 import { useCart } from '@/contexts/CartContext';
 import BackButton from '@/components/BackButton';
 
+interface Category {
+  id: string;
+  name: string;
+  name_ar: string;
+}
+
+interface MenuItem {
+  id: number;
+  name: string;
+  nameAr: string;
+  description: string;
+  descriptionAr: string;
+  price: number;
+  image: string;
+  category: string;
+  spiceLevel: number;
+  rating: number;
+  popular?: boolean;
+  isVegetarian?: boolean;
+  tags: string[];
+}
+
 const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [customizeModalOpen, setCustomizeModalOpen] = useState(false);
   const { addItem } = useCart();
 
-  const categories = [
-    { id: 'all', name: 'All Items', nameAr: 'جميع الأصناف' },
-    { id: 'traditional', name: 'Traditional', nameAr: 'تقليدي' },
-    { id: 'grills', name: 'Grills', nameAr: 'مشاوي' },
-    { id: 'appetizers', name: 'Appetizers', nameAr: 'مقبلات' },
-    { id: 'desserts', name: 'Desserts', nameAr: 'حلويات' },
-    { id: 'beverages', name: 'Beverages', nameAr: 'مشروبات' }
+  const categories: Category[] = [
+    { id: 'all', name: 'All Items', name_ar: 'جميع الأصناف' },
+    { id: 'traditional', name: 'Traditional', name_ar: 'تقليدي' },
+    { id: 'grills', name: 'Grills', name_ar: 'مشاوي' },
+    { id: 'appetizers', name: 'Appetizers', name_ar: 'مقبلات' },
+    { id: 'desserts', name: 'Desserts', name_ar: 'حلويات' },
+    { id: 'beverages', name: 'Beverages', name_ar: 'مشروبات' }
   ];
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       id: 1,
       name: "Kabsa Royale",
       nameAr: "كبسة ملكية",
       description: "Traditional lamb kabsa with aromatic spices",
+      descriptionAr: "كبسة لحم الخروف التقليدية مع التوابل العطرة",
       price: 85,
       image: "🍛",
       category: "traditional",
       spiceLevel: 2,
-      isPopular: true,
+      rating: 4.8,
+      popular: true,
       tags: ["Traditional", "Lamb", "Rice"]
     },
     {
@@ -47,11 +71,13 @@ const Menu = () => {
       name: "Mandi Special",
       nameAr: "مندي مميز", 
       description: "Tender chicken mandi with fragrant rice",
+      descriptionAr: "مندي دجاج طري مع الأرز العطر",
       price: 65,
       image: "🍗",
       category: "traditional",
       spiceLevel: 1,
-      isPopular: true,
+      rating: 4.7,
+      popular: true,
       tags: ["Traditional", "Chicken", "Rice"]
     },
     {
@@ -59,11 +85,13 @@ const Menu = () => {
       name: "Mixed Grill",
       nameAr: "مشاوي مشكلة",
       description: "Assorted grilled meats with traditional sides",
+      descriptionAr: "مشاوي لحوم متنوعة مع الأطباق الجانبية التقليدية",
       price: 120,
       image: "🥩",
       category: "grills", 
       spiceLevel: 2,
-      isPopular: true,
+      rating: 4.9,
+      popular: true,
       tags: ["Grilled", "Mixed Meats", "Traditional"]
     },
     {
@@ -71,10 +99,12 @@ const Menu = () => {
       name: "Hummus Platter",
       nameAr: "طبق الحمص",
       description: "Creamy hummus with olive oil and pita bread",
+      descriptionAr: "حمص كريمي بزيت الزيتون والخبز العربي",
       price: 25,
       image: "🥙",
       category: "appetizers",
       spiceLevel: 0,
+      rating: 4.5,
       isVegetarian: true,
       tags: ["Vegetarian", "Appetizer", "Traditional"]
     },
@@ -83,10 +113,12 @@ const Menu = () => {
       name: "Baklava Selection",
       nameAr: "تشكيلة البقلاوة",
       description: "Assorted honey-sweetened pastries",
+      descriptionAr: "معجنات محلاة بالعسل متنوعة",
       price: 35,
       image: "🥮",
       category: "desserts",
       spiceLevel: 0,
+      rating: 4.6,
       tags: ["Sweet", "Traditional", "Pastry"]
     },
     {
@@ -94,10 +126,12 @@ const Menu = () => {
       name: "Traditional Tea",
       nameAr: "شاي تقليدي",
       description: "Authentic Saudi tea blend with cardamom",
+      descriptionAr: "مزيج الشاي السعودي الأصيل مع الهيل",
       price: 15,
       image: "🍵",
       category: "beverages",
       spiceLevel: 0,
+      rating: 4.4,
       tags: ["Tea", "Traditional", "Hot"]
     }
   ];
@@ -110,12 +144,12 @@ const Menu = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const handleCustomize = (item: any) => {
+  const handleCustomize = (item: MenuItem) => {
     setSelectedItem(item);
     setCustomizeModalOpen(true);
   };
 
-  const handleAddToCart = (item: any, customizations?: any) => {
+  const handleAddToCart = (item: MenuItem, customizations?: any) => {
     addItem({
       id: item.id,
       name: item.name,
@@ -162,6 +196,8 @@ const Menu = () => {
           categories={categories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
+          searchQuery={searchTerm}
+          onSearchChange={setSearchTerm}
         />
 
         {/* Menu Items Grid */}
@@ -170,8 +206,6 @@ const Menu = () => {
             <MenuItemCard
               key={item.id}
               item={item}
-              onCustomize={handleCustomize}
-              onAddToCart={(item) => handleAddToCart(item)}
             />
           ))}
         </div>
