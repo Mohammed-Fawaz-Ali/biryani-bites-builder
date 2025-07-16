@@ -1,409 +1,381 @@
 
 import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { 
+  ArrowLeft, 
   MapPin, 
   CreditCard, 
-  Smartphone, 
-  Banknote, 
-  ChevronLeft,
-  CheckCircle2,
-  MapPinned
+  Clock, 
+  CheckCircle,
+  Smartphone,
+  Banknote,
+  Car,
+  Store
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import GeolocationPicker from '@/components/GeolocationPicker';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    street: '',
-    city: '',
-    zip: '',
-    paymentMethod: ''
-  });
-  
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [step, setStep] = useState(1); // 1: Address, 2: Time, 3: Payment, 4: Confirmation
+  const [orderType, setOrderType] = useState('delivery');
+  const [deliveryAddress, setDeliveryAddress] = useState(null);
+  const [selectedTime, setSelectedTime] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const deliveryFee = 5;
-  const tax = totalPrice * 0.15; // 15% tax
-  const finalTotal = totalPrice + deliveryFee + tax;
+  const deliveryTimes = [
+    'ASAP (25-35 mins)',
+    '1:00 PM - 1:30 PM',
+    '1:30 PM - 2:00 PM',
+    '2:00 PM - 2:30 PM',
+    '2:30 PM - 3:00 PM',
+    '6:00 PM - 6:30 PM',
+    '6:30 PM - 7:00 PM',
+    '7:00 PM - 7:30 PM',
+    '7:30 PM - 8:00 PM',
+    '8:00 PM - 8:30 PM'
+  ];
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const paymentMethods = [
+    { id: 'cod', name: 'Cash on Delivery', nameAr: 'الدفع عند الاستلام', icon: Banknote },
+    { id: 'mada', name: 'Mada Card', nameAr: 'بطاقة مدى', icon: CreditCard },
+    { id: 'applepay', name: 'Apple Pay', nameAr: 'أبل باي', icon: Smartphone },
+    { id: 'card', name: 'Credit/Debit Card', nameAr: 'بطاقة ائتمان', icon: CreditCard }
+  ];
+
+  const handleAddressSelect = (address: any) => {
+    setDeliveryAddress(address);
+    setStep(2);
   };
 
-  const handleLocationRequest = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setFormData(prev => ({
-            ...prev,
-            street: 'Current Location - ' + position.coords.latitude.toFixed(4),
-            city: 'Auto-detected'
-          }));
-        },
-        (error) => {
-          console.log('Location access denied:', error);
-          toast({
-            title: "Location Access Denied",
-            description: "Please enter your address manually.",
-            variant: "destructive"
-          });
-        }
-      );
+  const handleTimeSelect = () => {
+    if (selectedTime) {
+      setStep(3);
     }
   };
 
-  const isFormValid = () => {
-    return formData.name && formData.phone && formData.street && 
-           formData.city && formData.zip && formData.paymentMethod;
-  };
-
-  const handlePlaceOrder = async () => {
-    if (!isFormValid()) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsPlacingOrder(true);
-
-    try {
-      // Generate order number
-      const { data: orderNumberData, error: orderNumberError } = await supabase
-        .rpc('generate_order_number');
-
-      if (orderNumberError) {
-        throw orderNumberError;
-      }
-
-      const generatedOrderNumber = orderNumberData;
-
-      // Create delivery address object
-      const deliveryAddress = {
-        name: formData.name,
-        phone: formData.phone,
-        street: formData.street,
-        city: formData.city,
-        zip: formData.zip
-      };
-
-      // Create order in database
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          order_number: generatedOrderNumber,
-          customer_id: null, // Will be set when user authentication is implemented
-          status: 'pending',
-          order_type: 'delivery',
-          subtotal: totalPrice,
-          tax_amount: tax,
-          delivery_fee: deliveryFee,
-          total_amount: finalTotal,
-          payment_method: formData.paymentMethod as 'cash' | 'card' | 'mobile_wallet',
-          payment_status: 'pending',
-          delivery_address: deliveryAddress,
-          estimated_delivery_time: new Date(Date.now() + 45 * 60 * 1000).toISOString() // 45 minutes from now
-        })
-        .select()
-        .single();
-
-      if (orderError) {
-        throw orderError;
-      }
-
-      // Create order items
-      const orderItems = items.map(item => ({
-        order_id: order.id,
-        menu_item_id: item.id.toString(),
-        item_name: item.name,
-        item_name_ar: item.nameAr,
-        quantity: item.quantity,
-        unit_price: item.price,
-        total_price: item.price * item.quantity
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) {
-        throw itemsError;
-      }
-
-      setOrderNumber(generatedOrderNumber);
-      setShowConfirmation(true);
+  const handlePayment = async () => {
+    if (!paymentMethod) return;
+    
+    setIsProcessing(true);
+    
+    // Simulate order processing
+    setTimeout(() => {
+      const orderNum = `ORD-${Date.now().toString().slice(-6)}`;
+      setOrderNumber(orderNum);
+      setStep(4);
+      setIsProcessing(false);
       clearCart();
-
-      toast({
-        title: "Order Placed Successfully!",
-        description: `Your order #${generatedOrderNumber} has been confirmed.`,
-      });
-
-      setTimeout(() => {
-        setShowConfirmation(false);
-        navigate('/menu');
-      }, 3000);
-
-    } catch (error) {
-      console.error('Error placing order:', error);
-      toast({
-        title: "Order Failed",
-        description: "There was an error placing your order. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsPlacingOrder(false);
-    }
+    }, 3000);
   };
 
-  if (showConfirmation) {
+  if (items.length === 0 && step < 4) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <Card className="max-w-md mx-4 text-center">
-          <CardContent className="p-8">
-            <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Thank You!</h2>
-            <p className="text-gray-600 mb-4">
-              Your order #{orderNumber} has been confirmed.
-            </p>
-            <p className="text-sm text-gray-500">
-              Estimated delivery: 30-45 minutes
-            </p>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-gold/10 flex items-center justify-center">
+        <Card className="max-w-md mx-4">
+          <CardContent className="p-8 text-center">
+            <div className="text-6xl mb-4">🛒</div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h2>
+            <p className="text-gray-600 mb-6">Add some delicious items to continue with checkout</p>
+            <Button 
+              onClick={() => navigate('/menu')}
+              className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
+            >
+              Browse Menu
+            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  // Order Confirmation
+  if (step === 4) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-gold/10">
+        <div className="max-w-2xl mx-auto px-4 py-12">
+          <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
+            <CardContent className="p-8 text-center">
+              <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-10 h-10 text-white" />
+              </div>
+              
+              <h1 className="text-3xl font-bold text-emerald-800 mb-2">
+                Order Confirmed!
+              </h1>
+              <p className="text-lg text-emerald-700 mb-2 font-arabic">
+                تم تأكيد طلبك
+              </p>
+              
+              <div className="bg-emerald-50 rounded-lg p-6 my-8">
+                <h2 className="text-xl font-semibold text-emerald-800 mb-4">Order Details</h2>
+                <div className="space-y-2 text-left">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Order Number:</span>
+                    <span className="font-semibold text-emerald-700">{orderNumber}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Total:</span>
+                    <span className="font-semibold">SAR {totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Delivery Time:</span>
+                    <span className="font-semibold">{selectedTime}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Button
+                  onClick={() => navigate('/order-tracker')}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white py-3"
+                >
+                  Track Your Order
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/')}
+                  className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                >
+                  Back to Home
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-gold/10">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/menu')}
-              className="hover:bg-emerald-50"
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Back to Menu
-            </Button>
-            
-            {/* Breadcrumb */}
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <span>Menu</span>
-              <span>→</span>
-              <span>Cart</span>
-              <span>→</span>
-              <span className="text-emerald-600 font-semibold">Checkout</span>
-            </div>
+      <div className="bg-white shadow-sm border-b border-emerald-100">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Button
+            variant="ghost"
+            onClick={() => step > 1 ? setStep(step - 1) : navigate('/menu')}
+            className="text-emerald-700 hover:bg-emerald-50"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {step > 1 ? 'Back' : 'Back to Menu'}
+          </Button>
+          
+          {/* Progress */}
+          <div className="flex items-center space-x-2">
+            {[1, 2, 3].map((s) => (
+              <div
+                key={s}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                  s <= step 
+                    ? 'bg-emerald-600 text-white' 
+                    : 'bg-gray-200 text-gray-500'
+                }`}
+              >
+                {s}
+              </div>
+            ))}
           </div>
         </div>
-      </header>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Delivery Address */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5 text-emerald-600" />
-                  <span>Delivery Address</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      placeholder="Enter your full name"
-                    />
+          <div className="lg:col-span-2">
+            {step === 1 && (
+              <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-emerald-800 flex items-center space-x-2">
+                    <MapPin className="w-5 h-5" />
+                    <span>Delivery Details</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Order Type */}
+                  <div className="mb-6">
+                    <Label className="text-emerald-700 font-semibold mb-4 block">Order Type</Label>
+                    <RadioGroup value={orderType} onValueChange={setOrderType} className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-2 p-4 border-2 border-emerald-200 rounded-lg">
+                        <RadioGroupItem value="delivery" id="delivery" />
+                        <Label htmlFor="delivery" className="flex items-center space-x-2 cursor-pointer">
+                          <Car className="w-4 h-4" />
+                          <span>Delivery</span>
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 p-4 border-2 border-emerald-200 rounded-lg">
+                        <RadioGroupItem value="pickup" id="pickup" />
+                        <Label htmlFor="pickup" className="flex items-center space-x-2 cursor-pointer">
+                          <Store className="w-4 h-4" />
+                          <span>Pickup</span>
+                        </Label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="+966 XX XXX XXXX"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="street">Street Address</Label>
-                  <div className="flex space-x-2">
-                    <Input
-                      id="street"
-                      value={formData.street}
-                      onChange={(e) => handleInputChange('street', e.target.value)}
-                      placeholder="Enter your street address"
-                      className="flex-1"
-                    />
+
+                  {orderType === 'delivery' ? (
+                    <GeolocationPicker onAddressSelect={handleAddressSelect} />
+                  ) : (
+                    <div className="text-center py-8">
+                      <Store className="w-16 h-16 text-emerald-600 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-emerald-800 mb-2">Pickup Location</h3>
+                      <p className="text-gray-600 mb-4">Al-Bayt Restaurant</p>
+                      <p className="text-sm text-gray-500 mb-6">123 King Fahd Road, Al Olaya, Riyadh</p>
+                      <Button
+                        onClick={() => setStep(2)}
+                        className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
+                      >
+                        Continue to Time Selection
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {step === 2 && (
+              <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-emerald-800 flex items-center space-x-2">
+                    <Clock className="w-5 h-5" />
+                    <span>Delivery Time</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Label className="text-emerald-700 font-semibold">Choose your preferred time</Label>
+                    <RadioGroup value={selectedTime} onValueChange={setSelectedTime}>
+                      <div className="grid gap-3">
+                        {deliveryTimes.map((time) => (
+                          <div key={time} className="flex items-center space-x-3 p-4 border-2 border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors">
+                            <RadioGroupItem value={time} id={time} />
+                            <Label htmlFor={time} className="flex-1 cursor-pointer font-medium">
+                              {time}
+                            </Label>
+                            {time.includes('ASAP') && (
+                              <Badge className="bg-emerald-600 text-white">Recommended</Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </RadioGroup>
+                    
                     <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleLocationRequest}
-                      className="hover:bg-emerald-50"
+                      onClick={handleTimeSelect}
+                      disabled={!selectedTime}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 mt-6"
                     >
-                      <MapPinned className="h-4 w-4" />
+                      Continue to Payment
                     </Button>
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
-                      placeholder="Enter city"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="zip">ZIP Code</Label>
-                    <Input
-                      id="zip"
-                      value={formData.zip}
-                      onChange={(e) => handleInputChange('zip', e.target.value)}
-                      placeholder="Enter ZIP code"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Payment Options */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CreditCard className="h-5 w-5 text-emerald-600" />
-                  <span>Payment Method</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup
-                  value={formData.paymentMethod}
-                  onValueChange={(value) => handleInputChange('paymentMethod', value)}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-emerald-50 cursor-pointer">
-                      <RadioGroupItem value="cash" id="cash" />
-                      <Label htmlFor="cash" className="flex items-center space-x-3 cursor-pointer flex-1">
-                        <Banknote className="h-5 w-5 text-green-600" />
-                        <div>
-                          <div className="font-medium">Cash on Delivery (COD)</div>
-                          <div className="text-sm text-gray-500">Pay when your order arrives</div>
-                        </div>
-                      </Label>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-emerald-50 cursor-pointer">
-                      <RadioGroupItem value="card" id="card" />
-                      <Label htmlFor="card" className="flex items-center space-x-3 cursor-pointer flex-1">
-                        <CreditCard className="h-5 w-5 text-blue-600" />
-                        <div>
-                          <div className="font-medium">Credit/Debit Card</div>
-                          <div className="text-sm text-gray-500">Secure payment with Visa, Mastercard, Mada</div>
-                        </div>
-                      </Label>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-emerald-50 cursor-pointer">
-                      <RadioGroupItem value="mobile_wallet" id="mobile" />
-                      <Label htmlFor="mobile" className="flex items-center space-x-3 cursor-pointer flex-1">
-                        <Smartphone className="h-5 w-5 text-purple-600" />
-                        <div>
-                          <div className="font-medium">Mobile Payment</div>
-                          <div className="text-sm text-gray-500">Apple Pay, STC Pay, or other mobile wallets</div>
-                        </div>
-                      </Label>
-                    </div>
+            {step === 3 && (
+              <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-emerald-800 flex items-center space-x-2">
+                    <CreditCard className="w-5 h-5" />
+                    <span>Payment Method</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Label className="text-emerald-700 font-semibold">How would you like to pay?</Label>
+                    <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                      <div className="grid gap-4">
+                        {paymentMethods.map((method) => {
+                          const Icon = method.icon;
+                          return (
+                            <div key={method.id} className="flex items-center space-x-3 p-4 border-2 border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors">
+                              <RadioGroupItem value={method.id} id={method.id} />
+                              <Icon className="w-5 h-5 text-emerald-600" />
+                              <Label htmlFor={method.id} className="flex-1 cursor-pointer">
+                                <div className="font-medium">{method.name}</div>
+                                <div className="text-sm text-gray-500 font-arabic">{method.nameAr}</div>
+                              </Label>
+                              {method.id === 'cod' && (
+                                <Badge className="bg-gold text-white">Popular</Badge>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </RadioGroup>
+                    
+                    <Button
+                      onClick={handlePayment}
+                      disabled={!paymentMethod || isProcessing}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 mt-6 py-3 text-lg"
+                    >
+                      {isProcessing ? 'Processing Order...' : `Place Order - SAR ${totalPrice.toFixed(2)}`}
+                    </Button>
                   </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
-          {/* Order Summary */}
+          {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-4">
+            <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm sticky top-24">
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle className="text-emerald-800">Order Summary</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Items */}
-                <div className="space-y-3">
+              <CardContent>
+                <div className="space-y-4">
                   {items.map((item) => (
-                    <div key={item.id} className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{item.name}</h4>
-                        <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                    <div key={`${item.id}-${JSON.stringify(item.customizations)}`} className="flex items-center space-x-3 py-2">
+                      <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-lg">
+                        {item.image}
                       </div>
-                      <p className="font-medium text-sm">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-gray-800 truncate">{item.name}</p>
+                        <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                        {item.customizations?.spiceLevel && (
+                          <p className="text-xs text-emerald-600">Spice: {item.customizations.spiceLevel}/3</p>
+                        )}
+                      </div>
+                      <p className="font-semibold text-emerald-600 text-sm">
                         SAR {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   ))}
+                  
+                  <Separator className="my-4" />
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Subtotal</span>
+                      <span>SAR {totalPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Delivery Fee</span>
+                      <span>{orderType === 'delivery' ? 'SAR 10.00' : 'Free'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>VAT (15%)</span>
+                      <span>SAR {(totalPrice * 0.15).toFixed(2)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between font-bold text-lg text-emerald-800">
+                      <span>Total</span>
+                      <span>SAR {(totalPrice + (orderType === 'delivery' ? 10 : 0) + (totalPrice * 0.15)).toFixed(2)}</span>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="border-t pt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
-                    <span>SAR {totalPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Delivery Fee</span>
-                    <span>SAR {deliveryFee.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Tax (15%)</span>
-                    <span>SAR {tax.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-lg border-t pt-2">
-                    <span>Total</span>
-                    <span className="text-emerald-600">SAR {finalTotal.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handlePlaceOrder}
-                  disabled={!isFormValid() || isPlacingOrder}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3"
-                  size="lg"
-                >
-                  {isPlacingOrder ? 'Placing Order...' : 'Place Order'}
-                </Button>
-
-                <p className="text-xs text-gray-500 text-center">
-                  Estimated delivery: 30-45 minutes
-                </p>
               </CardContent>
             </Card>
           </div>
