@@ -120,15 +120,18 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode = 'login', onClose }) => {
 
   return (
     <div className="max-w-md mx-auto p-6">
-      <Card className="shadow-2xl border-0 bg-gradient-to-br from-white to-orange-50">
-        <CardHeader className="space-y-1 pb-6">
-          <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            {currentMode === 'login' ? 'Welcome Back' : 'Join Spice Palace'}
+      <Card className="shadow-2xl border-0 bg-white rounded-3xl">
+        <CardHeader className="space-y-4 pb-8 pt-8">
+          <CardTitle className="text-3xl font-bold text-center text-emerald font-arabic">
+            {currentMode === 'login' ? 'مرحباً بعودتك' : 'انضم إلى البيت'}
           </CardTitle>
-          <CardDescription className="text-center text-gray-600">
+          <CardTitle className="text-2xl font-semibold text-center text-emerald">
+            {currentMode === 'login' ? 'Welcome Back' : 'Join Al-Bayt'}
+          </CardTitle>
+          <CardDescription className="text-center text-muted-foreground">
             {currentMode === 'login' 
-              ? 'Sign in to your account to continue' 
-              : 'Create an account to start ordering'}
+              ? 'Sign in to experience authentic Saudi cuisine' 
+              : 'Create an account to start your culinary journey'}
           </CardDescription>
         </CardHeader>
         
@@ -138,31 +141,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode = 'login', onClose }) => {
             <Button
               type="button"
               variant="outline"
-              className="w-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all duration-300"
+              className="w-full h-12 border-gold hover:bg-gold hover:text-gold-foreground transition-all duration-300 rounded-full font-medium"
               onClick={handleGoogleSignIn}
               disabled={loading}
             >
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <Chrome className="mr-2 h-4 w-4 text-red-600" />
+                <Chrome className="mr-2 h-4 w-4" />
               )}
               Continue with Google
-            </Button>
-            
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
-              onClick={handleGithubSignIn}
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Github className="mr-2 h-4 w-4 text-gray-800" />
-              )}
-              Continue with GitHub
             </Button>
           </div>
 
@@ -176,23 +164,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode = 'login', onClose }) => {
           {/* Email/Password Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {currentMode === 'signup' && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-                  Full Name
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
-                    className="pl-10 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
-                  />
-                </div>
-                {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
+            <div className="space-y-2">
+              <Label htmlFor="fullName" className="text-sm font-medium text-emerald">
+                Full Name
+              </Label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  className="pl-12 h-12 border-border focus:border-gold focus:ring-gold rounded-full"
+                />
               </div>
+              {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
+            </div>
             )}
 
             <div className="space-y-2">
