@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,14 +59,27 @@ const Checkout = () => {
   const tax = total * 0.15; // 15% VAT
   const finalTotal = total + deliveryFee + tax;
 
-  const handleInputChange = (section: keyof OrderData, field: string, value: string) => {
-    setOrderData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
+  const handleInputChange = (section: 'customerInfo' | 'deliveryAddress', field: string, value: string) => {
+    setOrderData(prev => {
+      if (section === 'customerInfo') {
+        return {
+          ...prev,
+          customerInfo: {
+            ...prev.customerInfo,
+            [field]: value
+          }
+        };
+      } else if (section === 'deliveryAddress') {
+        return {
+          ...prev,
+          deliveryAddress: {
+            ...prev.deliveryAddress,
+            [field]: value
+          }
+        };
       }
-    }));
+      return prev;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
