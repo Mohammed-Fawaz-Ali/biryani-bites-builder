@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Button } from '@/components/ui/button';
@@ -25,8 +26,16 @@ interface UserProfileProps {
 
 const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut, loading } = useAuth();
-  const { userRole, loading: roleLoading } = useUserRole();
+  const { userRole, loading: roleLoading, isAdmin } = useUserRole();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings'>('profile');
+
+  // Debug logging to see what's happening
+  useEffect(() => {
+    console.log('UserProfile - User:', user?.id);
+    console.log('UserProfile - UserRole:', userRole);
+    console.log('UserProfile - IsAdmin:', isAdmin);
+    console.log('UserProfile - RoleLoading:', roleLoading);
+  }, [user, userRole, isAdmin, roleLoading]);
 
   const handleSignOut = async () => {
     try {
@@ -51,9 +60,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const userPhone = user?.user_metadata?.phone || '';
   const userAvatar = user?.user_metadata?.avatar_url || '';
   const joinDate = user?.created_at ? new Date(user.created_at).toLocaleDateString() : '';
-  
-  // Check if user has admin access based on role from database - only check for admin and manager
-  const hasAdminAccess = userRole === 'admin' || userRole === 'manager';
 
   return (
     <div className="p-6">
@@ -74,6 +80,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
               Active
             </Badge>
+          </div>
+          {/* Debug info - remove this in production */}
+          <div className="text-xs text-gray-500 mt-2">
+            Role: {userRole} | Admin: {isAdmin ? 'Yes' : 'No'} | Loading: {roleLoading ? 'Yes' : 'No'}
           </div>
         </CardHeader>
 
@@ -189,8 +199,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                   Notification Settings
                 </Button>
                 
-                {/* Admin Access Button - Only show if user has admin privileges */}
-                {hasAdminAccess && (
+                {/* Admin Access Button - Only show if user has admin role and not loading */}
+                {!roleLoading && isAdmin && (
                   <>
                     <Separator />
                     <Button 
