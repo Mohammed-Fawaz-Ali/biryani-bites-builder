@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export const useUserRole = () => {
   const { user } = useAuth();
-  const [userRole, setUserRole] = useState<string>('user');
+  const [userRole, setUserRole] = useState<string>('customer');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -14,7 +14,7 @@ export const useUserRole = () => {
       fetchUserRole();
     } else {
       setLoading(false);
-      setUserRole('user');
+      setUserRole('customer');
     }
   }, [user]);
 
@@ -25,31 +25,24 @@ export const useUserRole = () => {
       setLoading(true);
       console.log('Fetching user role for user:', user.id);
       
-      // Check the user_roles table instead of users table
+      // Use the database function to get user role
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
+        .rpc('get_user_role', { user_id: user.id });
 
       if (error) {
         console.error('Error fetching user role:', error);
-        // If no role found, default to 'user'
-        if (error.code === 'PGRST116') {
-          console.log('No role found, defaulting to user');
-          setUserRole('user');
-        } else {
-          setError('Failed to fetch user role');
-        }
+        // If no role found, default to 'customer'
+        setUserRole('customer');
+        setError('Failed to fetch user role');
         return;
       }
 
       console.log('User role data:', data);
-      setUserRole(data?.role || 'user');
+      setUserRole(data || 'customer');
     } catch (err) {
       console.error('Error:', err);
       setError('Failed to fetch user role');
-      setUserRole('user');
+      setUserRole('customer');
     } finally {
       setLoading(false);
     }
@@ -57,34 +50,15 @@ export const useUserRole = () => {
 
   const updateUserRole = async (userId: string, newRole: string): Promise<boolean> => {
     try {
-      // Check if user already has a role
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', userId)
-        .single();
+      // Update the user_type in the users table
+      const { error } = await supabase
+        .from('users')
+        .update({ user_type: newRole })
+        .eq('id', userId);
 
-      if (existingRole) {
-        // Update existing role
-        const { error } = await supabase
-          .from('user_roles')
-          .update({ role: newRole })
-          .eq('user_id', userId);
-
-        if (error) {
-          console.error('Error updating user role:', error);
-          return false;
-        }
-      } else {
-        // Insert new role
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({ user_id: userId, role: newRole });
-
-        if (error) {
-          console.error('Error inserting user role:', error);
-          return false;
-        }
+      if (error) {
+        console.error('Error updating user role:', error);
+        return false;
       }
 
       return true;
@@ -97,20 +71,34 @@ export const useUserRole = () => {
   const checkUserRole = async (userId: string): Promise<string | null> => {
     try {
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .single();
+        .rpc('get_user_role', { user_id: userId });
 
       if (error) {
         console.error('Error checking user role:', error);
         return null;
       }
 
-      return data?.role || null;
+      return data || null;
     } catch (err) {
       console.error('Error checking user role:', err);
       return null;
+    }
+  };
+
+  const checkIsAdmin = async (userId: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .rpc('is_admin', { user_id: userId });
+
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+
+      return data || false;
+    } catch (err) {
+      console.error('Error checking admin status:', err);
+      return false;
     }
   };
 
@@ -118,10 +106,11 @@ export const useUserRole = () => {
     userRole,
     loading,
     error,
-    isAdmin: userRole === 'admin',
+    isAdmin: userRole === 'admin' || userRole === 'manager',
     isDeliveryAgent: userRole === 'delivery_agent',
-    isCustomer: userRole === 'user' || userRole === 'customer',
+    isCustomer: userRole === 'customer',
     updateUserRole,
-    checkUserRole
+    checkUserRole,
+    checkIsAdmin
   };
 };

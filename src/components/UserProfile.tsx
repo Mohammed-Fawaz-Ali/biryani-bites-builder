@@ -81,10 +81,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               Active
             </Badge>
           </div>
-          {/* Debug info - remove this in production */}
-          <div className="text-xs text-gray-500 mt-2">
-            Role: {userRole} | Admin: {isAdmin ? 'Yes' : 'No'} | Loading: {roleLoading ? 'Yes' : 'No'}
-          </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
