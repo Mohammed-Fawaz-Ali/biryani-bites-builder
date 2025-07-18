@@ -52,8 +52,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const userAvatar = user?.user_metadata?.avatar_url || '';
   const joinDate = user?.created_at ? new Date(user.created_at).toLocaleDateString() : '';
   
-  // Check if user has admin access based on role from database
-  const hasAdminAccess = userRole === 'admin' || userRole === 'super_admin';
+  // Check if user has admin access based on role from database - only check for admin and manager
+  const hasAdminAccess = userRole === 'admin' || userRole === 'manager';
 
   return (
     <div className="p-6">

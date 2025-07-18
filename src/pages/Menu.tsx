@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,11 +67,11 @@ const Menu = () => {
         const transformedItems: MenuItem[] = (data || []).map(item => ({
           id: parseInt(item.id),
           name: item.name,
-          nameAr: item.name_ar,
+          name_ar: item.name_ar,
           description: item.description || '',
-          descriptionAr: item.description_ar || '',
+          description_ar: item.description_ar || '',
           price: item.price,
-          image: item.image_url || '',
+          image_url: item.image_url || '',
           category: item.category_id || 'other',
           spiceLevel: item.spice_level || 0,
           rating: item.rating || 0,
