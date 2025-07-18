@@ -9,11 +9,11 @@ import { useCart } from '@/contexts/CartContext';
 interface MenuItem {
   id: number;
   name: string;
-  nameAr: string;
+  name_ar: string;
   description: string;
-  descriptionAr: string;
+  description_ar: string;
   price: number;
-  image: string;
+  image_url: string;
   category: string;
   spiceLevel: number;
   rating: number;
@@ -33,9 +33,9 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
     addItem({
       id: item.id,
       name: item.name,
-      nameAr: item.nameAr,
+      nameAr: item.name_ar,
       price: item.price,
-      image: item.image,
+      image: item.image_url,
       spiceLevel: item.spiceLevel
     });
 
@@ -53,7 +53,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
         {/* Image Section */}
         <div className="relative h-48 bg-gradient-to-br from-emerald-100 to-green-200 flex items-center justify-center overflow-hidden">
           <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center text-6xl shadow-lg">
-            {item.image}
+            {item.image_url}
           </div>
           
           {/* Badges */}
@@ -77,7 +77,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
             {item.name}
           </h3>
           <p className="text-sm text-gray-500 font-arabic">
-            {item.nameAr}
+            {item.name_ar}
           </p>
 
           {/* Description */}
