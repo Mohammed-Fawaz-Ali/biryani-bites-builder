@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,14 +16,14 @@ import {
 } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from '@/contexts/CartContext';
 import MenuItemCard from '@/components/MenuItemCard';
 import { supabase } from '@/integrations/supabase/client';
 
 interface MenuItem {
-  id: string;
+  id: number;
   name: string;
   name_ar: string;
   description: string;
@@ -30,7 +31,7 @@ interface MenuItem {
   price: number;
   image_url: string;
   category: string;
-  spice_level: number;
+  spiceLevel: number;
   rating: number;
   popular?: boolean;
 }
@@ -63,7 +64,22 @@ const Menu = () => {
           return;
         }
 
-        setItems(data || []);
+        // Transform the data to match our MenuItem interface
+        const transformedItems: MenuItem[] = (data || []).map(item => ({
+          id: parseInt(item.id),
+          name: item.name,
+          name_ar: item.name_ar,
+          description: item.description || '',
+          description_ar: item.description_ar || '',
+          price: item.price,
+          image_url: item.image_url || '',
+          category: item.category_id || 'other',
+          spiceLevel: item.spice_level || 0,
+          rating: item.rating || 0,
+          popular: item.is_featured || false
+        }));
+
+        setItems(transformedItems);
       } catch (err) {
         console.error('Error fetching menu items:', err);
         setError('Failed to load menu items.');
@@ -87,18 +103,18 @@ const Menu = () => {
   const filteredItems = items.filter(item => {
     const searchMatch = item.name.toLowerCase().includes(search.toLowerCase());
     const categoryMatch = category ? item.category === category : true;
-    const spiceMatch = item.spice_level >= spiceLevel;
+    const spiceMatch = item.spiceLevel >= spiceLevel;
     return searchMatch && categoryMatch && spiceMatch;
   });
 
   const handleAddToCart = (item: MenuItem) => {
     addItem({
-      id: Number(item.id),
+      id: item.id,
       name: item.name,
       nameAr: item.name_ar,
       price: item.price,
       image: item.image_url,
-      spiceLevel: item.spice_level
+      spiceLevel: item.spiceLevel
     });
     toast({
       title: "Item added to cart!",
@@ -187,12 +203,7 @@ const Menu = () => {
             {filteredItems.map(item => (
               <MenuItemCard 
                 key={item.id} 
-                item={{
-                  ...item,
-                  id: Number(item.id), // Convert string to number for compatibility
-                  spiceLevel: item.spice_level || 0,
-                  rating: Number(item.rating) || 0
-                }} 
+                item={item} 
               />
             ))}
           </div>

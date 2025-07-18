@@ -2,83 +2,60 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface Order {
+export interface Order {
   id: string;
   order_number: string;
-  customer_id: string;
-  status: string;
+  customer_id: string | null;
   total_amount: number;
-  created_at: string;
-  customer: {
-    full_name: string;
-    phone: string;
-  };
-  order_items: {
-    item_name: string;
-    quantity: number;
-  }[];
+  status: string;
+  created_at: string | null;
+  customer_name?: string;
 }
 
 export const useRecentOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchRecentOrders = async () => {
-      try {
-        setLoading(true);
-        
-        const { data: ordersData, error: ordersError } = await supabase
-          .from('orders')
-          .select(`
-            id,
-            order_number,
-            customer_id,
-            status,
-            total_amount,
-            created_at,
-            users!orders_customer_id_fkey (
-              full_name,
-              phone
-            ),
-            order_items (
-              item_name,
-              quantity
-            )
-          `)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (ordersError) {
-          throw ordersError;
-        }
-
-        const formattedOrders = ordersData?.map(order => ({
-          id: order.id,
-          order_number: order.order_number,
-          customer_id: order.customer_id,
-          status: order.status,
-          total_amount: order.total_amount,
-          created_at: order.created_at,
-          customer: {
-            full_name: order.users?.full_name || 'Unknown Customer',
-            phone: order.users?.phone || 'No phone'
-          },
-          order_items: order.order_items || []
-        })) || [];
-
-        setOrders(formattedOrders);
-      } catch (err) {
-        console.error('Error fetching recent orders:', err);
-        setError('Failed to fetch recent orders');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRecentOrders();
   }, []);
 
-  return { orders, loading, error };
+  const fetchRecentOrders = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          id,
+          order_number,
+          customer_id,
+          total_amount,
+          status,
+          created_at
+        `)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Error fetching recent orders:', error);
+        setError('Failed to fetch recent orders');
+        return;
+      }
+
+      setOrders(data || []);
+    } catch (err) {
+      console.error('Error:', err);
+      setError('Failed to fetch recent orders');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    orders,
+    loading,
+    error,
+    refetch: fetchRecentOrders
+  };
 };

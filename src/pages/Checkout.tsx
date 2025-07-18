@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "@/hooks/use-toast"
 import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
@@ -88,7 +89,7 @@ const Checkout = () => {
 
       if (orderNumberError) throw orderNumberError;
 
-      // Create order
+      // Create order with proper enum types
       const orderData = {
         order_number: orderNumberData,
         customer_id: user.id,
@@ -96,7 +97,7 @@ const Checkout = () => {
         tax_amount: tax,
         delivery_fee: deliveryFee,
         total_amount: total,
-        payment_method: paymentMethod as any,
+        payment_method: (paymentMethod as 'cash' | 'card' | 'mobile_wallet' | 'online') || 'cash',
         delivery_address: {
           street: deliveryAddress.street,
           city: deliveryAddress.city,
@@ -104,8 +105,8 @@ const Checkout = () => {
           notes: deliveryAddress.notes
         },
         customer_notes: customerNotes,
-        status: 'pending',
-        payment_status: 'pending'
+        status: 'pending' as const,
+        payment_status: 'pending' as const
       };
 
       const { data: order, error: orderError } = await supabase
@@ -216,8 +217,10 @@ const Checkout = () => {
                 <SelectValue placeholder="Select a payment method" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="credit_card">Credit Card</SelectItem>
-                <SelectItem value="cash_on_delivery">Cash on Delivery</SelectItem>
+                <SelectItem value="card">Credit Card</SelectItem>
+                <SelectItem value="cash">Cash on Delivery</SelectItem>
+                <SelectItem value="mobile_wallet">Mobile Wallet</SelectItem>
+                <SelectItem value="online">Online Payment</SelectItem>
               </SelectContent>
             </Select>
           </div>
