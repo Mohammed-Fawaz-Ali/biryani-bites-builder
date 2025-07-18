@@ -9,22 +9,31 @@ export interface Order {
   total_amount: number;
   status: string;
   created_at: string | null;
-  customer_name?: string;
+  customer?: {
+    full_name?: string;
+    phone?: string;
+  };
+  order_items?: Array<{
+    quantity: number;
+    item_name: string;
+  }>;
 }
 
-export const useRecentOrders = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+export const useRecentOrders = (limit: number = 10) => {
+  const [data, setData] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     fetchRecentOrders();
-  }, []);
+  }, [limit]);
 
   const fetchRecentOrders = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      setError(null);
+      
+      const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select(`
           id,
@@ -35,25 +44,46 @@ export const useRecentOrders = () => {
           created_at
         `)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(limit);
 
-      if (error) {
-        console.error('Error fetching recent orders:', error);
-        setError('Failed to fetch recent orders');
-        return;
+      if (ordersError) {
+        throw new Error('Failed to fetch recent orders');
       }
 
-      setOrders(data || []);
+      // Fetch customer details and order items for each order
+      const ordersWithDetails = await Promise.all(
+        (ordersData || []).map(async (order) => {
+          const [customerResult, itemsResult] = await Promise.all([
+            supabase
+              .from('users')
+              .select('full_name, phone')
+              .eq('id', order.customer_id || '')
+              .maybeSingle(),
+            supabase
+              .from('order_items')
+              .select('quantity, item_name')
+              .eq('order_id', order.id)
+          ]);
+
+          return {
+            ...order,
+            customer: customerResult.data || undefined,
+            order_items: itemsResult.data || []
+          };
+        })
+      );
+
+      setData(ordersWithDetails);
     } catch (err) {
       console.error('Error:', err);
-      setError('Failed to fetch recent orders');
+      setError(err instanceof Error ? err : new Error('Failed to fetch recent orders'));
     } finally {
       setLoading(false);
     }
   };
 
   return {
-    orders,
+    data,
     loading,
     error,
     refetch: fetchRecentOrders

@@ -8,7 +8,7 @@ type UserType = Database['public']['Enums']['user_type'];
 
 export const useUserRole = () => {
   const { user } = useAuth();
-  const [role, setRole] = useState<UserType>('customer');
+  const [userRole, setUserRole] = useState<UserType>('customer');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -37,7 +37,7 @@ export const useUserRole = () => {
         return;
       }
 
-      setRole(data?.user_type || 'customer');
+      setUserRole(data?.user_type || 'customer');
     } catch (err) {
       console.error('Error:', err);
       setError('Failed to fetch user role');
@@ -86,12 +86,12 @@ export const useUserRole = () => {
   };
 
   return {
-    role,
+    userRole,
     loading,
     error,
-    isAdmin: role === 'admin' || role === 'manager',
-    isDeliveryAgent: role === 'delivery_agent',
-    isCustomer: role === 'customer',
+    isAdmin: userRole === 'admin' || userRole === 'manager',
+    isDeliveryAgent: userRole === 'delivery_agent',
+    isCustomer: userRole === 'customer',
     updateUserRole,
     checkUserRole
   };

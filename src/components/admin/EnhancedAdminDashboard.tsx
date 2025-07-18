@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Users, 
@@ -9,7 +10,7 @@ import {
   XCircle,
   UserPlus
 } from 'lucide-react';
-import { StatsCard } from './StatsCard';
+import StatsCard from './StatsCard';
 import { OrdersTable } from './OrdersTable';
 import { PopularItemsChart } from './PopularItemsChart';
 import { ActivityLogsFeed } from './ActivityLogsFeed';
@@ -19,7 +20,7 @@ import { usePopularItems } from '@/hooks/usePopularItems';
 import { toast } from 'sonner';
 
 const EnhancedAdminDashboard = () => {
-  const stats = useAdminStats();
+  const { stats, loading: statsLoading, error: statsError } = useAdminStats();
   const { data: recentOrders, loading: ordersLoading, error: ordersError } = useRecentOrders(10);
   const { data: popularItems, loading: itemsLoading, error: itemsError } = usePopularItems(5);
 
@@ -52,8 +53,8 @@ const EnhancedAdminDashboard = () => {
           changeType="positive"
           icon={ShoppingBag}
           iconColor="text-blue-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
         
         <StatsCard
@@ -63,8 +64,8 @@ const EnhancedAdminDashboard = () => {
           changeType="positive"
           icon={Users}
           iconColor="text-green-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
         
         <StatsCard
@@ -74,8 +75,8 @@ const EnhancedAdminDashboard = () => {
           changeType="positive"
           icon={DollarSign}
           iconColor="text-emerald-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
         
         <StatsCard
@@ -85,8 +86,8 @@ const EnhancedAdminDashboard = () => {
           changeType="positive"
           icon={Calendar}
           iconColor="text-purple-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
       </div>
 
@@ -97,8 +98,8 @@ const EnhancedAdminDashboard = () => {
           value={stats.pendingOrders}
           icon={Clock}
           iconColor="text-orange-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
         
         <StatsCard
@@ -106,8 +107,8 @@ const EnhancedAdminDashboard = () => {
           value={stats.completedOrders}
           icon={CheckCircle}
           iconColor="text-green-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
         
         <StatsCard
@@ -115,8 +116,8 @@ const EnhancedAdminDashboard = () => {
           value={stats.cancelledOrders}
           icon={XCircle}
           iconColor="text-red-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
         
         <StatsCard
@@ -124,8 +125,8 @@ const EnhancedAdminDashboard = () => {
           value={stats.newUsersToday}
           icon={UserPlus}
           iconColor="text-blue-600"
-          loading={stats.loading}
-          error={stats.error}
+          loading={statsLoading}
+          error={statsError?.message}
         />
       </div>
 

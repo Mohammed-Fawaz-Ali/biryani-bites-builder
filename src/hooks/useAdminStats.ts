@@ -25,7 +25,7 @@ export const useAdminStats = () => {
     newUsersToday: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     fetchStats();
@@ -34,6 +34,7 @@ export const useAdminStats = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // Fetch all required data
       const [ordersResult, usersResult, reservationsResult] = await Promise.all([
@@ -73,7 +74,7 @@ export const useAdminStats = () => {
       });
     } catch (err) {
       console.error('Error fetching admin stats:', err);
-      setError('Failed to fetch statistics');
+      setError(err instanceof Error ? err : new Error('Failed to fetch statistics'));
     } finally {
       setLoading(false);
     }
