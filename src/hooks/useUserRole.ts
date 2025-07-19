@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+type UserRole = 'customer' | 'admin' | 'manager' | 'delivery_agent';
+
 export const useUserRole = () => {
   const { user } = useAuth();
-  const [userRole, setUserRole] = useState<string>('customer');
+  const [userRole, setUserRole] = useState<UserRole>('customer');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -38,7 +40,13 @@ export const useUserRole = () => {
       }
 
       console.log('User role data:', data);
-      setUserRole(data || 'customer');
+      const role = data || 'customer';
+      // Ensure the role is one of the valid types
+      if (['customer', 'admin', 'manager', 'delivery_agent'].includes(role)) {
+        setUserRole(role as UserRole);
+      } else {
+        setUserRole('customer');
+      }
     } catch (err) {
       console.error('Error:', err);
       setError('Failed to fetch user role');
