@@ -59,7 +59,7 @@ export const useUserRole = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string): Promise<boolean> => {
+  const updateUserRole = async (userId: string, newRole: UserRole): Promise<boolean> => {
     try {
       // Update the user_type in the users table
       const { error } = await supabase
