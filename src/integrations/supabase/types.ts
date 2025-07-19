@@ -254,6 +254,88 @@ export type Database = {
         }
         Relationships: []
       }
+      menu_item_addons: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_available: boolean | null
+          menu_item_id: string | null
+          name: string
+          name_ar: string | null
+          price: number
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_available?: boolean | null
+          menu_item_id?: string | null
+          name: string
+          name_ar?: string | null
+          price?: number
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_available?: boolean | null
+          menu_item_id?: string | null
+          name?: string
+          name_ar?: string | null
+          price?: number
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_item_addons_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_item_analytics: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_ordered_at: string | null
+          menu_item_id: string | null
+          total_orders: number | null
+          total_revenue: number | null
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_ordered_at?: string | null
+          menu_item_id?: string | null
+          total_orders?: number | null
+          total_revenue?: number | null
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_ordered_at?: string | null
+          menu_item_id?: string | null
+          total_orders?: number | null
+          total_revenue?: number | null
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_item_analytics_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_items: {
         Row: {
           allergens: string[] | null
@@ -264,21 +346,37 @@ export type Database = {
           description: string | null
           description_ar: string | null
           dietary_tags: string[] | null
+          draft: Json | null
+          full_description: string | null
           id: string
           image_url: string | null
           images: Json | null
+          include_service_charge: boolean | null
+          include_tax: boolean | null
           ingredients: Json | null
           is_available: boolean | null
+          is_chefs_special: boolean | null
           is_featured: boolean | null
+          is_new_item: boolean | null
+          is_out_of_stock: boolean | null
+          meta_description: string | null
+          meta_title: string | null
           name: string
           name_ar: string
           popularity_score: number | null
           preparation_time: number | null
           price: number
+          promo_price: number | null
           rating: number | null
           review_count: number | null
+          scheduled_publish_at: string | null
+          short_description: string | null
+          slug: string | null
+          special_price: number | null
           spice_level: number | null
+          stock_count: number | null
           updated_at: string | null
+          video_url: string | null
         }
         Insert: {
           allergens?: string[] | null
@@ -289,21 +387,37 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           dietary_tags?: string[] | null
+          draft?: Json | null
+          full_description?: string | null
           id?: string
           image_url?: string | null
           images?: Json | null
+          include_service_charge?: boolean | null
+          include_tax?: boolean | null
           ingredients?: Json | null
           is_available?: boolean | null
+          is_chefs_special?: boolean | null
           is_featured?: boolean | null
+          is_new_item?: boolean | null
+          is_out_of_stock?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
           name: string
           name_ar: string
           popularity_score?: number | null
           preparation_time?: number | null
           price: number
+          promo_price?: number | null
           rating?: number | null
           review_count?: number | null
+          scheduled_publish_at?: string | null
+          short_description?: string | null
+          slug?: string | null
+          special_price?: number | null
           spice_level?: number | null
+          stock_count?: number | null
           updated_at?: string | null
+          video_url?: string | null
         }
         Update: {
           allergens?: string[] | null
@@ -314,21 +428,37 @@ export type Database = {
           description?: string | null
           description_ar?: string | null
           dietary_tags?: string[] | null
+          draft?: Json | null
+          full_description?: string | null
           id?: string
           image_url?: string | null
           images?: Json | null
+          include_service_charge?: boolean | null
+          include_tax?: boolean | null
           ingredients?: Json | null
           is_available?: boolean | null
+          is_chefs_special?: boolean | null
           is_featured?: boolean | null
+          is_new_item?: boolean | null
+          is_out_of_stock?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
           name?: string
           name_ar?: string
           popularity_score?: number | null
           preparation_time?: number | null
           price?: number
+          promo_price?: number | null
           rating?: number | null
           review_count?: number | null
+          scheduled_publish_at?: string | null
+          short_description?: string | null
+          slug?: string | null
+          special_price?: number | null
           spice_level?: number | null
+          stock_count?: number | null
           updated_at?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -754,6 +884,10 @@ export type Database = {
       }
       generate_reservation_number: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_slug: {
+        Args: { input_text: string }
         Returns: string
       }
       get_user_role: {
