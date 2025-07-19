@@ -159,9 +159,18 @@ export function AddEditMenuItemForm({ itemId, onClose, onSave }: AddEditMenuItem
   const saveDraft = async () => {
     if (!itemId) return;
     
+    // Convert addons to a plain object structure that's compatible with Json type
+    const serializedAddons = addons.map(addon => ({
+      id: addon.id || null,
+      name: addon.name,
+      name_ar: addon.name_ar,
+      price: addon.price,
+      is_available: addon.is_available
+    }));
+
     const draft = {
       ...watchedValues,
-      addons,
+      addons: serializedAddons,
       saved_at: new Date().toISOString()
     };
 
