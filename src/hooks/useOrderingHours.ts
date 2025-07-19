@@ -37,7 +37,7 @@ export function useOrderingHours() {
           return;
         }
 
-        const config = data.config as OrderingHours;
+        const config = data.config as unknown as OrderingHours;
         setOrderingHours(config);
 
         if (!config.is_ordering_enabled) {

@@ -45,7 +45,7 @@ export function OrderingHoursConfig() {
       }
 
       if (data?.config) {
-        setHours(data.config as OrderingHours);
+        setHours(data.config as unknown as OrderingHours);
       }
     } catch (err) {
       console.error('Error loading ordering hours:', err);
@@ -64,7 +64,7 @@ export function OrderingHoursConfig() {
           flag_name: 'ordering_hours',
           description: 'Configuration for daily ordering hours',
           is_enabled: true,
-          config: hours
+          config: hours as unknown as any
         }, {
           onConflict: 'flag_name'
         });
