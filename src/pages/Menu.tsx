@@ -23,6 +23,8 @@ import { useCart } from '@/contexts/CartContext';
 import MenuItemCard from '@/components/MenuItemCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrderingHours } from '@/hooks/useOrderingHours';
+import MenuNavigation from '@/components/MenuNavigation';
+import EnhancedCategoryFilter from '@/components/EnhancedCategoryFilter';
 
 interface MenuItem {
   id: number;
@@ -41,7 +43,7 @@ interface MenuItem {
 
 const Menu = () => {
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>('all');
   const [spiceLevel, setSpiceLevel] = useState<number>(0);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<MenuItem[]>([]);
@@ -99,17 +101,16 @@ const Menu = () => {
   }, []);
 
   const categories = [
-    { label: 'All', value: null },
-    { label: 'Biryani', value: 'biryani' },
-    { label: 'Chicken', value: 'chicken' },
-    { label: 'Kebab', value: 'kebab' },
-    { label: 'Curry', value: 'curry' },
-    { label: 'Vegetarian', value: 'vegetarian' },
+    { id: 'biryani', name: 'Biryani', name_ar: 'برياني' },
+    { id: 'chicken', name: 'Chicken', name_ar: 'دجاج' },
+    { id: 'kebab', name: 'Kebab', name_ar: 'كباب' },
+    { id: 'curry', name: 'Curry', name_ar: 'كاري' },
+    { id: 'vegetarian', name: 'Vegetarian', name_ar: 'نباتي' },
   ];
 
   const filteredItems = items.filter(item => {
     const searchMatch = item.name.toLowerCase().includes(search.toLowerCase());
-    const categoryMatch = category ? item.category === category : true;
+    const categoryMatch = category === 'all' || item.category === category;
     const spiceMatch = item.spiceLevel >= spiceLevel;
     return searchMatch && categoryMatch && spiceMatch;
   });
@@ -139,119 +140,111 @@ const Menu = () => {
   };
 
   return (
-    <div className="container py-12">
-      {/* Ordering Status Banner */}
-      {!orderingHoursLoading && !isOrderingAllowed && (
-        <Card className="mb-6 border-amber-200 bg-amber-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-amber-800">
-              <Clock className="h-5 w-5" />
-              <div>
-                <h3 className="font-semibold">Ordering Currently Unavailable</h3>
-                <p className="text-sm">
-                  {orderingHours?.is_ordering_enabled 
-                    ? `We accept orders from ${orderingHours.daily_start_time} to ${orderingHours.daily_end_time} daily.`
-                    : 'Online ordering is temporarily disabled.'
-                  }
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
+      {/* Navigation */}
+      <MenuNavigation />
 
-      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4 mb-8">
-        <div className="relative w-full md:w-1/3">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
-          <Input
-            type="search"
-            placeholder="Search menu items..."
-            className="pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring focus:ring-emerald-200"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        <div className="w-full md:w-1/3">
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-full justify-between text-sm"
-              >
-                {category ?
-                  categories.find((c) => c.value === category)?.label :
-                  "Select Category"}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandList>
-                  <CommandInput placeholder="Search category..." />
-                  <CommandEmpty>No category found.</CommandEmpty>
-                  <CommandGroup>
-                    {categories.map((category) => (
-                      <CommandItem
-                        key={category.value}
-                        value={category.label}
-                        onSelect={() => {
-                          setCategory(category.value);
-                          setOpen(false);
-                        }}
-                      >
-                        <Utensils className="mr-2 h-4 w-4" />
-                        {category.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="w-full md:w-1/3">
-          <div className="flex items-center space-x-3">
-            <Flame className="h-5 w-5 text-orange-500" />
-            <label htmlFor="spiceLevel" className="text-sm font-medium text-gray-700">
-              Spice Level: {spiceLevel}
-            </label>
+      {/* Main Content */}
+      <div className="pt-20 pb-24">
+        {/* Ordering Status Banner */}
+        {!orderingHoursLoading && !isOrderingAllowed && (
+          <div className="mx-4 mb-6 animate-fade-in">
+            <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 text-amber-800">
+                  <Clock className="h-5 w-5 animate-pulse" />
+                  <div>
+                    <h3 className="font-semibold">Ordering Currently Unavailable</h3>
+                    <p className="text-sm">
+                      {orderingHours?.is_ordering_enabled 
+                        ? `We accept orders from ${orderingHours.daily_start_time} to ${orderingHours.daily_end_time} daily.`
+                        : 'Online ordering is temporarily disabled.'
+                      }
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <Slider
-            id="spiceLevel"
-            defaultValue={[0]}
-            max={3}
-            step={1}
-            className="w-full"
-            onValueChange={(value) => setSpiceLevel(value[0])}
-          />
+        )}
+
+        {/* Enhanced Category Filter */}
+        <EnhancedCategoryFilter
+          selectedCategory={category}
+          onCategoryChange={setCategory}
+          searchQuery={search}
+          onSearchChange={setSearch}
+          categories={categories}
+        />
+
+        {/* Spice Level Filter */}
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-100 animate-slide-up" style={{ animationDelay: '300ms' }}>
+            <div className="flex items-center space-x-3 mb-4">
+              <Flame className="h-6 w-6 text-orange-500 animate-pulse" />
+              <label htmlFor="spiceLevel" className="text-lg font-semibold text-gray-700">
+                Spice Level: {spiceLevel}
+              </label>
+            </div>
+            <Slider
+              id="spiceLevel"
+              defaultValue={[0]}
+              max={3}
+              step={1}
+              className="w-full"
+              onValueChange={(value) => setSpiceLevel(value[0])}
+            />
+            <div className="flex justify-between text-sm text-gray-500 mt-2">
+              <span>Mild</span>
+              <span>Medium</span>
+              <span>Hot</span>
+              <span>Extra Hot</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Items */}
+        <div className="container mx-auto px-4">
+          {loading && (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+              <p className="text-gray-600 animate-pulse">Loading delicious menu items...</p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="text-center py-12">
+              <p className="text-red-500 animate-bounce">{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${!isOrderingAllowed ? 'opacity-75' : ''}`}>
+              {filteredItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="animate-fade-in hover:animate-scale-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <MenuItemCard 
+                    item={item}
+                    onAddToCart={() => handleAddToCart(item)}
+                    orderingDisabled={!isOrderingAllowed}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!loading && !error && filteredItems.length === 0 && (
+            <div className="text-center py-16 animate-fade-in">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No dishes found</h3>
+              <p className="text-gray-500">Try adjusting your search or category filters</p>
+            </div>
+          )}
         </div>
       </div>
-
-      {loading && <p className="text-center text-gray-600">Loading menu items...</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
-
-      {!loading && !error && (
-          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${!isOrderingAllowed ? 'opacity-75' : ''}`}>
-            {filteredItems.map(item => (
-              <MenuItemCard 
-                key={item.id} 
-                item={item}
-                onAddToCart={() => handleAddToCart(item)}
-                orderingDisabled={!isOrderingAllowed}
-              />
-            ))}
-          </div>
-      )}
-
-      {!loading && !error && filteredItems.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No menu items found matching your criteria.</p>
-        </div>
-      )}
     </div>
   );
 };
