@@ -1,14 +1,55 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star, Clock, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+const initialImage = "https://images.immediate.co.uk/production/volatile/sites/30/2021/02/butter-chicken-ac2ff98.jpg";
+const imageList = [
+  "https://www.spiceandcolour.com/wp-content/uploads/2020/06/receta-presentacion-biryani-de-pollo-01.jpg",
+  "https://www.chilitochoc.com/wp-content/uploads/2025/06/kabab-masala-curry-recipe.jpg",
+  "https://thebellyrulesthemind.net/wp-content/uploads/2023/11/IMG_9872-scaled.jpg",
+  "https://www.shemins.com/wp-content/uploads/2017/05/Shemins-Butter-Chicken-LR.jpg"
+];
+
 const HeroSection = () => {
   const navigate = useNavigate();
+  const [currentImage, setCurrentImage] = useState(-1); // -1 means show initialImage
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    if (currentImage === -1) {
+      // Show initial image for 2 seconds, then start slideshow
+      const timer = setTimeout(() => {
+        setFade(false);
+        setTimeout(() => {
+          setCurrentImage(0);
+          setFade(true);
+        }, 400);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setCurrentImage((prev) => (prev + 1) % imageList.length);
+        setFade(true);
+      }, 400);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [currentImage]);
   
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50"
+      style={{
+        backgroundImage: "url('https://t4.ftcdn.net/jpg/02/92/20/37/360_F_292203735_CSsyqyS6A4Z9Czd4Msf7qZEhoxjpzZl1.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }}
+    >
+      {/* Dark tint overlay */}
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
       {/* Background pattern */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
@@ -26,22 +67,22 @@ const HeroSection = () => {
             <div className="mb-6">
               <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
                 <span className="block bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent">
-                  Taste the
+                  Savor Saudi 
                 </span>
-                <span className="block bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
-                  Tradition
+                <span className="block bg-gradient-to-r from-red-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
+                  Royalty
                 </span>
               </h1>
               
               {/* Elegant catchphrase */}
-              <p className="text-2xl md:text-3xl font-semibold text-gray-700 mb-4">
+              <p className="text-2xl md:text-3xl font-semibold text-gray-500 mb-4">
                 Where Every Grain Tells a Story
               </p>
               
               {/* Supporting catchphrase */}
-              <p className="text-lg md:text-xl text-gray-600 italic">
+              {/* <p className="text-lg md:text-xl text-gray-600 italic">
                 "From our kitchen to your heart, authentic flavors that celebrate generations"
-              </p>
+              </p> */}
             </div>
             
             <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-2xl leading-relaxed">
@@ -90,29 +131,25 @@ const HeroSection = () => {
         {/* Right side - Biryani image */}
         <div className="flex justify-center lg:justify-end">
           <div className="relative">
-            <div className="w-80 h-80 md:w-[500px] md:h-[500px] rounded-full overflow-hidden shadow-2xl border-8 border-white/50 backdrop-blur-sm">
-              <img 
-                src="https://images.unsplash.com/photo-1563379091339-03246963d96c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                alt="Delicious Biryani"
-                className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+            <div className="w-96 h-96 md:w-[600px] md:h-[600px] rounded-full overflow-hidden shadow-2xl border-8 border-white/50 backdrop-blur-sm bg-transparent flex items-center justify-center">
+              <img
+                src={currentImage === -1 ? initialImage : imageList[currentImage]}
+                alt="Delicious Food"
+                className={`w-full h-full object-cover object-center transition-transform duration-700 transition-opacity ${fade ? 'opacity-100' : 'opacity-0'}`}
+                style={{ transition: 'opacity 2s ease' }}
               />
             </div>
             
             {/* Floating elements around the image */}
-            <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-70 animate-pulse flex items-center justify-center">
+            <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-70 flex items-center justify-center">
               <span className="text-white font-bold text-sm">Fresh</span>
             </div>
-            <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-gradient-to-br from-red-400 to-pink-500 rounded-full opacity-70 animate-pulse flex items-center justify-center">
+            <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-gradient-to-br from-red-400 to-pink-500 rounded-full opacity-70 flex items-center justify-center">
               <span className="text-white font-bold text-xs">Hot</span>
             </div>
-            <div className="absolute top-1/2 -left-12 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full opacity-70 animate-pulse flex items-center justify-center">
+            <div className="absolute top-1/2 -left-12 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full opacity-70 flex items-center justify-center">
               <span className="text-white font-bold text-xs">🌿</span>
             </div>
-            
-            {/* Decorative spice particles */}
-            <div className="absolute top-20 right-10 w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-            <div className="absolute bottom-20 right-20 w-3 h-3 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-40 -right-5 w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '1.5s' }}></div>
           </div>
         </div>
       </div>

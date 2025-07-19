@@ -127,7 +127,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
       {/* Sticky Navigation */}
-      <nav className={`${isScrolled ? 'bg-white/95 shadow-lg backdrop-blur-md' : 'bg-white/90 backdrop-blur-sm'} border-b border-emerald-200 sticky top-0 z-50 transition-all duration-300`}>
+      <nav className={`${isScrolled ? 'bg-black shadow-lg backdrop-blur-md' : 'bg-black/90 backdrop-blur-sm'} border-b border-emerald-200 sticky top-0 z-50 transition-all duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -138,7 +138,7 @@ const Index = () => {
                 </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-white">
                 {language === 'en' ? 'Al-Bayt' : 'البيت'}
               </span>
             </div>
@@ -147,31 +147,31 @@ const Index = () => {
             <div className="hidden md:flex items-center space-x-8">
               <button 
                 onClick={() => navigate('/')} 
-                className="text-emerald-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+                className="text-white hover:text-emerald-400 transition-all duration-300 relative group font-medium"
               >
                 {language === 'en' ? 'Home' : 'الرئيسية'}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
               </button>
               <button 
                 onClick={() => navigate('/menu')} 
-                className="text-gray-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+                className="text-white hover:text-emerald-400 transition-all duration-300 relative group font-medium"
               >
                 {language === 'en' ? 'Menu' : 'القائمة'}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
               </button>
               <button 
                 onClick={() => navigate('/reservations')} 
-                className="text-gray-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+                className="text-white hover:text-emerald-400 transition-all duration-300 relative group font-medium"
               >
                 {language === 'en' ? 'Reservations' : 'الحجوزات'}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
               </button>
               <a 
                 href="#about" 
-                className="text-gray-700 hover:text-emerald-600 transition-all duration-300 relative group font-medium"
+                className="text-white hover:text-emerald-400 transition-all duration-300 relative group font-medium"
               >
                 {language === 'en' ? 'About' : 'عن المطعم'}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
               </a>
             </div>
 
@@ -179,24 +179,22 @@ const Index = () => {
             <div className="flex items-center space-x-4">
               {/* Language Toggle */}
               <Button
-                variant="outline"
                 size="sm"
                 onClick={toggleLanguage}
-                className="hover:bg-emerald-50 border-emerald-200"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-md"
               >
-                <Globe className="h-4 w-4 mr-2" />
+                <Globe className="h-4 w-4 mr-2 text-white" />
                 {language === 'en' ? 'العربية' : 'English'}
               </Button>
 
               {/* Cart Icon */}
               <Button
-                variant="outline"
-                className="relative hover:bg-emerald-50 border-emerald-200"
+                className="relative bg-emerald-700 hover:bg-emerald-800 text-white border-none shadow-md"
                 onClick={() => navigate('/menu')}
               >
-                <ShoppingCart className="h-5 w-5 text-emerald-600" />
+                <ShoppingCart className="h-5 w-5 text-white" />
                 {totalItems > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-emerald-600 text-white min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
+                  <Badge className="absolute -top-2 -right-2 bg-amber-500 text-white min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
                     {totalItems}
                   </Badge>
                 )}
@@ -271,7 +269,7 @@ const Index = () => {
       </nav>
 
       {/* Live Activity Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white py-3 px-4 text-center relative overflow-hidden">
+      {/* <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white py-3 px-4 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10 animate-pulse"></div>
         <div className="relative z-10 flex items-center justify-center space-x-6 text-sm">
           <div className="flex items-center space-x-2">
@@ -284,7 +282,7 @@ const Index = () => {
             <span className="font-medium">🔥 {recentOrder} {language === 'en' ? 'just ordered!' : 'تم طلبه للتو!'}</span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Hero Section */}
       <HeroSection />
@@ -337,55 +335,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Interactive Features */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
-              {language === 'en' ? 'Experience the Magic' : 'اختبر السحر'}
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              {language === 'en' ? 'Discover our unique features that make dining with us an unforgettable experience' : 'اكتشف ميزاتنا الفريدة التي تجعل تناول الطعام معنا تجربة لا تُنسى'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-            {/* Biryani Builder */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-white to-emerald-50 hover:scale-[1.02] transform">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-emerald-700">
-                  <Utensils className="h-6 w-6" />
-                  <span>{language === 'en' ? 'Custom Biryani Builder' : 'مصمم البرياني المخصص'}</span>
-                  <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300">
-                    {language === 'en' ? 'Popular' : 'شائع'}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BiryaniBuilder />
-              </CardContent>
-            </Card>
-
-            {/* Live Kitchen */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-white to-amber-50 hover:scale-[1.02] transform">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-amber-700">
-                  <Camera className="h-6 w-6" />
-                  <span>{language === 'en' ? 'Live from Our Kitchen' : 'مباشر من مطبخنا'}</span>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-red-600">LIVE</span>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LiveKitchen />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
+      
       {/* Customer Testimonials */}
       <section id="testimonials" className="py-20">
         <div className="max-w-7xl mx-auto px-4">

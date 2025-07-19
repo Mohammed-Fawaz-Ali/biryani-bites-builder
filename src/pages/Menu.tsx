@@ -148,11 +148,11 @@ const Menu = () => {
       <div className="pt-20 pb-24">
         {/* Ordering Status Banner */}
         {!orderingHoursLoading && !isOrderingAllowed && (
-          <div className="mx-4 mb-6 animate-fade-in">
+          <div className="mx-4 mb-6">
             <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-amber-800">
-                  <Clock className="h-5 w-5 animate-pulse" />
+                  <Clock className="h-5 w-5" />
                   <div>
                     <h3 className="font-semibold">Ordering Currently Unavailable</h3>
                     <p className="text-sm">
@@ -179,9 +179,9 @@ const Menu = () => {
 
         {/* Spice Level Filter */}
         <div className="container mx-auto px-4 py-6">
-          <div className="max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-100 animate-slide-up" style={{ animationDelay: '300ms' }}>
+          <div className="max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-100">
             <div className="flex items-center space-x-3 mb-4">
-              <Flame className="h-6 w-6 text-orange-500 animate-pulse" />
+              <Flame className="h-6 w-6 text-orange-500" />
               <label htmlFor="spiceLevel" className="text-lg font-semibold text-gray-700">
                 Spice Level: {spiceLevel}
               </label>
@@ -207,14 +207,14 @@ const Menu = () => {
         <div className="container mx-auto px-4">
           {loading && (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-              <p className="text-gray-600 animate-pulse">Loading delicious menu items...</p>
+              <div className="rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading delicious menu items...</p>
             </div>
           )}
           
           {error && (
             <div className="text-center py-12">
-              <p className="text-red-500 animate-bounce">{error}</p>
+              <p className="text-red-500">{error}</p>
             </div>
           )}
 
@@ -223,8 +223,6 @@ const Menu = () => {
               {filteredItems.map((item, index) => (
                 <div
                   key={item.id}
-                  className="animate-fade-in hover:animate-scale-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <MenuItemCard 
                     item={item}
@@ -237,7 +235,7 @@ const Menu = () => {
           )}
 
           {!loading && !error && filteredItems.length === 0 && (
-            <div className="text-center py-16 animate-fade-in">
+            <div className="text-center py-16">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-xl font-semibold text-gray-600 mb-2">No dishes found</h3>
               <p className="text-gray-500">Try adjusting your search or category filters</p>
