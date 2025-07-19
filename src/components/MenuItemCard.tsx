@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Star } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
 
 interface MenuItem {
   id: number;
@@ -22,22 +21,19 @@ interface MenuItem {
 
 interface MenuItemCardProps {
   item: MenuItem;
+  onAddToCart?: () => void;
+  orderingDisabled?: boolean;
 }
 
-const MenuItemCard = ({ item }: MenuItemCardProps) => {
-  const { addItem } = useCart();
+const MenuItemCard = ({ item, onAddToCart, orderingDisabled = false }: MenuItemCardProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handleAddToCart = () => {
+    if (orderingDisabled || !onAddToCart) return;
+    
     setIsAnimating(true);
-    addItem({
-      id: item.id,
-      name: item.name,
-      nameAr: item.name_ar,
-      price: item.price,
-      image: item.image_url,
-      spiceLevel: item.spiceLevel
-    });
+    onAddToCart();
 
     // Reset animation after a delay
     setTimeout(() => setIsAnimating(false), 600);
@@ -52,9 +48,18 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
       <CardContent className="p-0">
         {/* Image Section */}
         <div className="relative h-48 bg-gradient-to-br from-emerald-100 to-green-200 flex items-center justify-center overflow-hidden">
-          <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center text-6xl shadow-lg">
-            {item.image_url}
-          </div>
+          {item.image_url && !imageError ? (
+            <img 
+              src={item.image_url} 
+              alt={item.name}
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center text-6xl shadow-lg">
+              🍽️
+            </div>
+          )}
           
           {/* Badges */}
           {item.popular && (
@@ -102,12 +107,12 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
             className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white transition-all duration-300 ${
               isAnimating ? 'scale-95' : 'scale-100'
             }`}
-            disabled={isAnimating}
+            disabled={isAnimating || orderingDisabled}
           >
             <Plus className={`mr-2 h-4 w-4 transition-transform duration-300 ${
               isAnimating ? 'rotate-180' : 'rotate-0'
             }`} />
-            {isAnimating ? 'Added!' : 'Add to Cart'}
+            {orderingDisabled ? 'Ordering Closed' : (isAnimating ? 'Added!' : 'Add to Cart')}
           </Button>
         </div>
       </CardContent>

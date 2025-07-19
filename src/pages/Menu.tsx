@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,8 @@ import {
   Flame, 
   Leaf, 
   ShoppingCart,
-  Plus
+  Plus,
+  Clock
 } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -20,6 +22,7 @@ import { Badge } from "@/components/ui/badge"
 import { useCart } from '@/contexts/CartContext';
 import MenuItemCard from '@/components/MenuItemCard';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrderingHours } from '@/hooks/useOrderingHours';
 
 interface MenuItem {
   id: number;
@@ -33,6 +36,7 @@ interface MenuItem {
   spiceLevel: number;
   rating: number;
   popular?: boolean;
+  is_available: boolean;
 }
 
 const Menu = () => {
@@ -45,6 +49,7 @@ const Menu = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { addItem } = useCart();
+  const { isOrderingAllowed, orderingHours, loading: orderingHoursLoading } = useOrderingHours();
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -52,9 +57,11 @@ const Menu = () => {
         setLoading(true);
         setError(null);
 
+        // Only fetch items that are available (active)
         const { data, error } = await supabase
           .from('menu_items')
           .select('*')
+          .eq('is_available', true)
           .order('name', { ascending: true });
 
         if (error) {
@@ -75,7 +82,8 @@ const Menu = () => {
           category: item.category_id || 'other',
           spiceLevel: item.spice_level || 0,
           rating: item.rating || 0,
-          popular: item.is_featured || false
+          popular: item.is_featured || false,
+          is_available: item.is_available
         }));
 
         setItems(transformedItems);
@@ -107,6 +115,15 @@ const Menu = () => {
   });
 
   const handleAddToCart = (item: MenuItem) => {
+    if (!isOrderingAllowed) {
+      toast({
+        title: "Ordering Unavailable",
+        description: "Orders are currently not being accepted. Please try again during our operating hours.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     addItem({
       id: item.id,
       name: item.name,
@@ -123,6 +140,26 @@ const Menu = () => {
 
   return (
     <div className="container py-12">
+      {/* Ordering Status Banner */}
+      {!orderingHoursLoading && !isOrderingAllowed && (
+        <Card className="mb-6 border-amber-200 bg-amber-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 text-amber-800">
+              <Clock className="h-5 w-5" />
+              <div>
+                <h3 className="font-semibold">Ordering Currently Unavailable</h3>
+                <p className="text-sm">
+                  {orderingHours?.is_ordering_enabled 
+                    ? `We accept orders from ${orderingHours.daily_start_time} to ${orderingHours.daily_end_time} daily.`
+                    : 'Online ordering is temporarily disabled.'
+                  }
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4 mb-8">
         <div className="relative w-full md:w-1/3">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
@@ -198,14 +235,22 @@ const Menu = () => {
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${!isOrderingAllowed ? 'opacity-75' : ''}`}>
             {filteredItems.map(item => (
               <MenuItemCard 
                 key={item.id} 
-                item={item} 
+                item={item}
+                onAddToCart={() => handleAddToCart(item)}
+                orderingDisabled={!isOrderingAllowed}
               />
             ))}
           </div>
+      )}
+
+      {!loading && !error && filteredItems.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No menu items found matching your criteria.</p>
+        </div>
       )}
     </div>
   );
