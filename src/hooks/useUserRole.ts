@@ -41,10 +41,13 @@ export const useUserRole = () => {
 
       console.log('User role data:', data);
       const role = data || 'customer';
-      // Ensure the role is one of the valid types
-      if (['customer', 'admin', 'manager', 'delivery_agent'].includes(role)) {
+      
+      // Validate that the role is one of the valid UserRole values
+      const validRoles: UserRole[] = ['customer', 'admin', 'manager', 'delivery_agent'];
+      if (validRoles.includes(role as UserRole)) {
         setUserRole(role as UserRole);
       } else {
+        console.warn('Invalid role received:', role);
         setUserRole('customer');
       }
     } catch (err) {
