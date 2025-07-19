@@ -138,10 +138,10 @@ const HeroSection = () => {
               
               {/* Floating elements around the image - Hidden on small screens */}
               <div className="hidden sm:block absolute -top-4 sm:-top-6 -right-4 sm:-right-6 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-70 flex items-center justify-center">
-                <span className="text-white font-bold text-xs sm:text-sm">Fresh</span>
+                <span className="text-white font-bold text-xs sm:text-sm"></span>
               </div>
               <div className="hidden sm:block absolute -bottom-4 sm:-bottom-6 lg:-bottom-8 -left-4 sm:-left-6 lg:-left-8 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-red-400 to-pink-500 rounded-full opacity-70 flex items-center justify-center">
-                <span className="text-white font-bold text-xs">Hot</span>
+                <span className="text-white font-bold text-xs"></span>
               </div>
               <div className="hidden lg:block absolute top-1/2 -left-8 lg:-left-12 w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full opacity-70 flex items-center justify-center">
                 <span className="text-white font-bold text-xs">🌿</span>

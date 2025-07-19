@@ -131,14 +131,14 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center">
-                  <ChefHat className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center">
+                  <ChefHat className="h-6 w-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-lg sm:text-2xl font-bold text-white">
+              <span className="text-2xl font-bold text-white">
                 {language === 'en' ? 'Al-Bayt' : 'البيت'}
               </span>
             </div>
@@ -176,43 +176,42 @@ const Index = () => {
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Language Toggle - Hidden on mobile */}
+            <div className="flex items-center space-x-4">
+              {/* Language Toggle */}
               <Button
                 size="sm"
                 onClick={toggleLanguage}
-                className="hidden sm:flex bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-md"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-md"
               >
                 <Globe className="h-4 w-4 mr-2 text-white" />
-                <span className="text-xs md:text-sm">{language === 'en' ? 'العربية' : 'English'}</span>
+                {language === 'en' ? 'العربية' : 'English'}
               </Button>
 
               {/* Cart Icon */}
               <Button
-                size="sm"
-                className="relative bg-emerald-700 hover:bg-emerald-800 text-white border-none shadow-md px-2 sm:px-4 py-2"
+                className="relative bg-emerald-700 hover:bg-emerald-800 text-white border-none shadow-md"
                 onClick={() => navigate('/menu')}
               >
-                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                <ShoppingCart className="h-5 w-5 text-white" />
                 {totalItems > 0 && (
-                  <Badge className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-amber-500 text-white min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center text-[10px] sm:text-xs">
+                  <Badge className="absolute -top-2 -right-2 bg-amber-500 text-white min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
                     {totalItems}
                   </Badge>
                 )}
               </Button>
 
-              {/* User Profile OR Auth Button - Simplified on mobile */}
+              {/* User Profile OR Auth Button */}
               {user ? (
                 <Popover>
                   <PopoverTrigger>
-                    <Avatar className="h-6 w-6 sm:h-8 sm:w-8 cursor-pointer hover:scale-110 transition-transform duration-300">
+                    <Avatar className="h-8 w-8 cursor-pointer hover:scale-110 transition-transform duration-300">
                       <AvatarImage src={userAvatar} alt={userDisplayName} />
-                      <AvatarFallback className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white text-xs sm:text-sm">
+                      <AvatarFallback className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white">
                         {getInitials(userDisplayName)}
                       </AvatarFallback>
                     </Avatar>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80 sm:w-96 p-0" align="end">
+                  <PopoverContent className="w-96 p-0" align="end">
                     <UserProfile />
                   </PopoverContent>
                 </Popover>
@@ -220,12 +219,11 @@ const Index = () => {
                 <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
-                      size="sm"
                       variant="outline"
-                      className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 border-0 px-2 sm:px-4 py-2 text-xs sm:text-sm"
+                      className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 border-0"
                     >
-                      <LogIn className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline">{language === 'en' ? 'Sign In' : 'تسجيل الدخول'}</span>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -240,9 +238,9 @@ const Index = () => {
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="text-white hover:text-emerald-400 hover:bg-white/10 p-1"
+                  className="text-emerald-600"
                 >
-                  {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
               </div>
             </div>
@@ -250,41 +248,20 @@ const Index = () => {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden absolute top-16 left-0 right-0 bg-black/95 backdrop-blur-sm border-b border-emerald-200 shadow-lg z-[60]">
+            <div className="md:hidden absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-emerald-200 shadow-lg">
               <div className="px-4 py-6 space-y-4">
-                <button 
-                  onClick={() => { navigate('/'); setMobileMenuOpen(false); }} 
-                  className="block w-full text-left text-white hover:text-emerald-400 transition-colors py-3 font-medium border-b border-gray-700/50 last:border-b-0"
-                >
+                <button onClick={() => navigate('/')} className="block text-emerald-700 hover:text-emerald-600 transition-colors py-2 font-medium">
                   {language === 'en' ? 'Home' : 'الرئيسية'}
                 </button>
-                <button 
-                  onClick={() => { navigate('/menu'); setMobileMenuOpen(false); }} 
-                  className="block w-full text-left text-white hover:text-emerald-400 transition-colors py-3 font-medium border-b border-gray-700/50 last:border-b-0"
-                >
+                <button onClick={() => navigate('/menu')} className="block text-gray-700 hover:text-emerald-600 transition-colors py-2 font-medium">
                   {language === 'en' ? 'Menu' : 'القائمة'}
                 </button>
-                <button 
-                  onClick={() => { navigate('/reservations'); setMobileMenuOpen(false); }} 
-                  className="block w-full text-left text-white hover:text-emerald-400 transition-colors py-3 font-medium border-b border-gray-700/50 last:border-b-0"
-                >
+                <button onClick={() => navigate('/reservations')} className="block text-gray-700 hover:text-emerald-600 transition-colors py-2 font-medium">
                   {language === 'en' ? 'Reservations' : 'الحجوزات'}
                 </button>
-                <a 
-                  href="#about" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-left text-white hover:text-emerald-400 transition-colors py-3 font-medium border-b border-gray-700/50 last:border-b-0"
-                >
+                <a href="#about" className="block text-gray-700 hover:text-emerald-600 transition-colors py-2 font-medium">
                   {language === 'en' ? 'About' : 'عن المطعم'}
                 </a>
-                {/* Language toggle in mobile menu */}
-                <button 
-                  onClick={() => { toggleLanguage(); setMobileMenuOpen(false); }}
-                  className="flex items-center w-full text-left text-emerald-400 hover:text-emerald-300 transition-colors py-3 font-medium"
-                >
-                  <Globe className="h-4 w-4 mr-2" />
-                  {language === 'en' ? 'العربية' : 'English'}
-                </button>
               </div>
             </div>
           )}
@@ -309,9 +286,22 @@ const Index = () => {
 
       {/* Hero Section */}
       <HeroSection />
-
-      {/* Quick Action Tiles */}
-      <section className="py-16 bg-white/70 backdrop-blur-sm">
+{/* Menu Highlights Section */}
+      <section id="menu" className="py-20 bg-white/50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              {language === 'en' ? 'Our Signature Dishes' : 'أطباقنا المميزة'}
+            </h2>
+            <p className="text-gray-600 text-lg">
+              {language === 'en' ? 'Authentic flavors that tell a story' : 'نكهات أصيلة تحكي قصة'}
+            </p>
+          </div>
+          <MenuShowcase />
+        </div>
+      </section>
+{/* Quick Action Tiles */}
+<section className="py-16 bg-emerald-200 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
@@ -342,25 +332,8 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Menu Highlights Section */}
-      <section id="menu" className="py-20 bg-white/50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
-              {language === 'en' ? 'Our Signature Dishes' : 'أطباقنا المميزة'}
-            </h2>
-            <p className="text-gray-600 text-lg">
-              {language === 'en' ? 'Authentic flavors that tell a story' : 'نكهات أصيلة تحكي قصة'}
-            </p>
-          </div>
-          <MenuShowcase />
-        </div>
-      </section>
-
-      
       {/* Customer Testimonials */}
-      <section id="testimonials" className="py-20">
+      <section id="testimonials" className="py-20 bg-white/50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
