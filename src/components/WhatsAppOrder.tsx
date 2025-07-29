@@ -32,7 +32,7 @@ const WhatsAppOrder = () => {
 
   const openWhatsApp = (dish = null) => {
     const message = generateWhatsAppMessage(dish);
-    const phoneNumber = "919876543210"; // Replace with actual WhatsApp Business number
+    const phoneNumber = "919542286241"; // Replace with actual WhatsApp Business number
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
   };

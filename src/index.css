@@ -1,5 +1,7 @@
 /* Import premium fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Crimson+Text:wght@400;600&display=swap');
+/* Montserrat Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -319,9 +321,6 @@
   @apply px-4 sm:px-6 lg:px-8;
 }
 
-/* Montserrat Font Import */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
-
 /* Custom font classes */
 .font-montserrat {
   font-family: 'Montserrat', sans-serif;
@@ -395,6 +394,10 @@
 }
 
 /* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
 [dir="rtl"] .snap-x {
   scroll-snap-type: x mandatory;
   direction: rtl;
@@ -403,6 +406,125 @@
 [dir="rtl"] .space-x-6 > * + * {
   margin-right: 1.5rem;
   margin-left: 0;
+}
+
+[dir="rtl"] .space-x-3 > * + * {
+  margin-right: 0.75rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .space-x-4 > * + * {
+  margin-right: 1rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .space-x-8 > * + * {
+  margin-right: 2rem;
+  margin-left: 0;
+}
+
+/* RTL Text Alignment */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* RTL Flex Direction */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* RTL Margins and Paddings */
+[dir="rtl"] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .ml-4 {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .mr-4 {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+/* RTL Border Radius */
+[dir="rtl"] .rounded-l-lg {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+[dir="rtl"] .rounded-r-lg {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+/* RTL Transform */
+[dir="rtl"] .transform {
+  transform: scaleX(-1);
+}
+
+/* RTL Navigation specific */
+[dir="rtl"] nav .flex {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .justify-between {
+  justify-content: space-between;
+}
+
+/* RTL Grid RTL-specific adjustments */
+[dir="rtl"] .grid {
+  direction: rtl;
+}
+
+/* Arabic Font Support */
+[dir="rtl"] body,
+[dir="rtl"] .font-arabic {
+  font-family: 'Amiri', 'Noto Sans Arabic', 'Arial', sans-serif;
+}
+
+/* RTL Animation adjustments */
+[dir="rtl"] .group-hover\:translate-x-1 {
+  transform: translateX(-0.25rem);
+}
+
+/* RTL Specific utility classes */
+.rtl\:space-x-reverse > * + * {
+  margin-right: var(--tw-space-x-reverse);
+  margin-left: calc(var(--tw-space-x) * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.rtl\:flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.rtl\:text-right {
+  text-align: right;
 }
 
 /* Mobile-specific optimizations */

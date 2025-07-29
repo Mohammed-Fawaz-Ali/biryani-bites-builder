@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useI18n } from '@/contexts/I18nContext';
 import { 
   ChefHat, 
   Sparkles, 
@@ -52,12 +53,12 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { totalItems } = useCart();
+  const { language, setLanguage, t, isRTL } = useI18n();
   const [viewerCount, setViewerCount] = useState(47);
   const [recentOrder, setRecentOrder] = useState("Chicken Biryani");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
   useEffect(() => {
     // Simulate real-time activity
@@ -92,8 +93,8 @@ const Index = () => {
   const userAvatar = user?.user_metadata?.avatar_url || '';
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ar' : 'en');
-    document.documentElement.dir = language === 'en' ? 'rtl' : 'ltr';
+    const newLanguage = language === 'en' ? 'ar' : 'en';
+    setLanguage(newLanguage);
   };
 
   // Quick Action Tiles Data

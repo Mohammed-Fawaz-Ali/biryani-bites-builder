@@ -1,0 +1,154 @@
+{
+  "brandName": "Al-Bayt",
+  "navigation": {
+    "home": "Home",
+    "menu": "Menu",
+    "reservations": "Reservations",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "switchToArabic": "العربية"
+  },
+  "hero": {
+    "title": "Savor Saudi Royalty",
+    "tagline": "Where Every Grain Tells a Story",
+    "description": "Experience the art of traditional Indian cuisine with our signature biryanis, tandoor specialties, and aromatic curries crafted by master chefs.",
+    "exploreMenu": "Explore Menu",
+    "orderNow": "Order Now",
+    "stats": {
+      "rating": "4.9/5 Rating",
+      "customers": "50k+ Customers",
+      "experience": "30 Years Experience"
+    }
+  },
+  "menu": {
+    "title": "Our Signature Dishes",
+    "subtitle": "Authentic flavors that tell a story",
+    "viewCompleteMenu": "View Complete Menu",
+    "dishes": {
+      "chickenBiryani": "Hyderabadi Chicken Biryani",
+      "chickenBiryaniDesc": "Aromatic basmati rice with tender chicken, cooked in traditional dum style",
+      "muttonBiryani": "Mutton Biryani",
+      "muttonBiryaniDesc": "Premium mutton pieces with fragrant spices and saffron rice",
+      "fishBiryani": "Fish Biryani",
+      "fishBiryaniDesc": "Fresh fish fillets with coastal spices and basmati rice",
+      "chickenTikka": "Chicken Tikka Masala",
+      "chickenTikkaDesc": "Grilled chicken in creamy tomato-based curry",
+      "butterChicken": "Butter Chicken",
+      "butterChickenDesc": "Tender chicken in rich, buttery tomato gravy",
+      "seekhKebab": "Seekh Kebab",
+      "seekhKebabDesc": "Spiced minced meat grilled to perfection"
+    }
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Everything you need for the perfect dining experience",
+    "viewMenu": "View Menu",
+    "reservations": "Reservations",
+    "delivery": "Delivery",
+    "reviews": "Reviews"
+  },
+  "testimonials": {
+    "title": "Wall of Fame",
+    "subtitle": "See what our happy customers are saying"
+  },
+  "membership": {
+    "title": "Choose Your Experience",
+    "subtitle": "Unlock exclusive benefits and elevate your dining journey",
+    "standard": {
+      "title": "Standard",
+      "price": "Free",
+      "subtitle": "Perfect for casual dining",
+      "benefits": [
+        "No Delivery Fee",
+        "No Reservation Fee",
+        "Access to full menu",
+        "Basic support",
+        "Earn 1 point per SAR 10 spent"
+      ],
+      "cta": "Get Started"
+    },
+    "vip": {
+      "title": "VIP",
+      "price": "₳10/month",
+      "subtitle": "Luxury dining experience",
+      "mostPopular": "Most Popular",
+      "allStandardPlus": "All Standard benefits PLUS:",
+      "benefits": [
+        "30-minute guaranteed delivery window",
+        "Priority table reservations",
+        "Complimentary appetizer on birthdays",
+        "Dedicated VIP support line",
+        "2× loyalty points per SAR 10 spent"
+      ],
+      "cta": "Upgrade to VIP"
+    }
+  },
+  "reservationEvents": {
+    "title": "Book Memories, Celebrate Moments",
+    "titleArabic": "احجز الذكريات، احتفل باللحظات",
+    "subtitle": "From intimate dinners to grand celebrations, create unforgettable experiences at Al-Bayt",
+    "makeReservation": "Make a Reservation",
+    "events": {
+      "birthday": {
+        "title": "Birthday Bliss",
+        "description": "Make every birthday unforgettable with our special celebration packages",
+        "cta": "Reserve Now"
+      },
+      "office": {
+        "title": "Office Gatherings",
+        "description": "Elevate your corporate events with our professional dining spaces",
+        "cta": "Reserve Now"
+      },
+      "anniversary": {
+        "title": "Anniversary Evenings",
+        "description": "Celebrate love with romantic ambiance and exquisite cuisine",
+        "cta": "Reserve Now"
+      },
+      "family": {
+        "title": "Family Reunions",
+        "description": "Bring the family together for memorable dining experiences",
+        "cta": "Reserve Now"
+      },
+      "date": {
+        "title": "Date Nights",
+        "description": "Create magical moments with intimate dining for two",
+        "cta": "Reserve Now"
+      },
+      "graduation": {
+        "title": "Graduation Celebrations",
+        "description": "Honor achievements with a feast worthy of success",
+        "cta": "Reserve Now"
+      }
+    }
+  },
+  "footer": {
+    "description": "Authentic Indian cuisine crafted with love and tradition since 1995. Experience the finest flavors that tell stories of heritage and passion.",
+    "rating": "4.9/5 Rating",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "followUs": "Follow Us",
+    "specialOffer": "Special Offer!",
+    "offerText": "Get 15% off on your first order. Use code: WELCOME15",
+    "copyright": "© 2024 Spice Palace. All rights reserved. Made with ❤️ for food lovers.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "sitemap": "Sitemap",
+    "address": "123 Spice Street, Food City",
+    "phone": "+91 98765 43210",
+    "email": "hello@spicepalace.com",
+    "hours": "11 AM - 11 PM Daily"
+  },
+  "activity": {
+    "peopleViewing": "people viewing now",
+    "justOrdered": "just ordered!"
+  },
+  "common": {
+    "popular": "Popular",
+    "addToCart": "Add to Cart",
+    "quickView": "Quick View",
+    "spiceLevel": "Spice Level",
+    "english": "English"
+  }
+}
+
