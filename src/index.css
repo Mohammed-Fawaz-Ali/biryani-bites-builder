@@ -1,0 +1,463 @@
+/* Import premium fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Crimson+Text:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Design System - Al-Bayt Restaurant */
+
+@layer base {
+  :root {
+    /* Base colors in HSL format */
+    --background: 240 20% 98%;
+    --foreground: 228 84% 24%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 228 84% 24%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 84% 24%;
+
+    /* Premium Al-Bayt brand colors */
+    --primary: 228 84% 24%;        /* Deep Blue #25283D - Headers, Footer */
+    --primary-foreground: 240 20% 98%;
+
+    --secondary: 148 16% 38%;       /* Sage Green #596F62 - Backgrounds, accents */
+    --secondary-foreground: 240 20% 98%;
+
+    --accent: 42 100% 63%;          /* Gold #FFBC42 - Buttons, highlights */
+    --accent-foreground: 228 84% 24%;
+
+    --muted: 240 20% 95%;           /* Soft White #EEEEFF - General backgrounds */
+    --muted-foreground: 228 20% 50%;
+
+    --success: 86 100% 69%;         /* Mint Green #9CE37D - Subtle CTAs, icons */
+    --success-foreground: 228 84% 24%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 240 20% 98%;
+
+    --border: 240 20% 90%;
+    --input: 240 20% 95%;
+    --ring: 228 84% 24%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 228 84% 24%;
+    --sidebar-foreground: 240 20% 98%;
+    --sidebar-primary: 42 100% 63%;
+    --sidebar-primary-foreground: 228 84% 24%;
+    --sidebar-accent: 228 70% 30%;
+    --sidebar-accent-foreground: 240 20% 98%;
+    --sidebar-border: 228 70% 30%;
+    --sidebar-ring: 42 100% 63%;
+  }
+
+  .dark {
+    /* Convert dark theme to light theme for better visibility */
+    --background: 240 20% 98%; /* light background */
+    --foreground: 228 84% 24%; /* dark text */
+
+    --card: 0 0% 100%; /* white cards */
+    --card-foreground: 228 84% 24%; /* dark text on cards */
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 84% 24%;
+
+    --primary: 228 84% 24%;
+    --primary-foreground: 240 20% 98%;
+
+    --secondary: 148 16% 38%;
+    --secondary-foreground: 240 20% 98%;
+
+    --muted: 240 20% 95%;
+    --muted-foreground: 228 20% 50%;
+
+    --accent: 42 100% 63%;
+    --accent-foreground: 228 84% 24%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 240 20% 98%;
+
+    --border: 240 20% 90%;
+    --input: 240 20% 95%;
+    --ring: 228 84% 24%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* Premium typography hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h5 {
+    @apply text-lg md:text-xl;
+  }
+
+  h6 {
+    @apply text-base md:text-lg;
+  }
+
+  /* Premium body text */
+  p, li, span {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.7;
+  }
+
+  /* Remove scrollbar styling for cleaner look */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Premium animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out;
+}
+
+/* Premium hover effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(37, 40, 61, 0.15);
+}
+
+/* Premium glass effect */
+.glass-effect {
+  background: rgba(238, 238, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Premium gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--success)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@layer utilities {
+  /* Premium shadows */
+  .shadow-premium {
+    box-shadow: 
+      0 4px 6px -1px rgba(37, 40, 61, 0.1),
+      0 2px 4px -1px rgba(37, 40, 61, 0.06);
+  }
+
+  .shadow-premium-lg {
+    box-shadow: 
+      0 10px 15px -3px rgba(37, 40, 61, 0.1),
+      0 4px 6px -2px rgba(37, 40, 61, 0.05);
+  }
+
+  .shadow-premium-xl {
+    box-shadow: 
+      0 20px 25px -5px rgba(37, 40, 61, 0.1),
+      0 10px 10px -5px rgba(37, 40, 61, 0.04);
+  }
+
+  /* Mobile-specific utilities */
+  .xs\:inline {
+    @media (min-width: 475px) {
+      display: inline;
+    }
+  }
+
+  .xs\:hidden {
+    @media (min-width: 475px) {
+      display: none;
+    }
+  }
+
+  /* Safe area padding for mobile devices */
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  /* Touch-friendly sizing */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text selection for UI elements */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Better mobile scrolling */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Premium spacing */
+.section-padding {
+  @apply py-16 md:py-20 lg:py-24;
+}
+
+.container-padding {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Montserrat Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+
+/* Custom font classes */
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Smooth scrolling for horizontal carousels */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Snap scroll for carousel */
+.snap-x {
+  scroll-snap-type: x mandatory;
+}
+
+.snap-center {
+  scroll-snap-align: center;
+}
+
+/* Custom animations for membership cards */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 184, 46, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(245, 184, 46, 0.6);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Parallax effect for reservation cards */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+/* Starburst texture animation */
+@keyframes starburst-twinkle {
+  0%, 100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+.animate-starburst {
+  animation: starburst-twinkle 6s ease-in-out infinite;
+}
+
+/* RTL Support */
+[dir="rtl"] .snap-x {
+  scroll-snap-type: x mandatory;
+  direction: rtl;
+}
+
+[dir="rtl"] .space-x-6 > * + * {
+  margin-right: 1.5rem;
+  margin-left: 0;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .membership-card {
+    min-height: 400px;
+  }
+  
+  .reservation-card {
+    min-width: 280px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bg-black\/40 {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .border-\[#F5B82E\]\/30 {
+    border-color: #F5B82E;
+  }
+}
+
+/* Premium buttons */
+.btn-premium {
+  @apply px-8 py-3 rounded-xl font-medium transition-all duration-300;
+  @apply shadow-premium hover:shadow-premium-lg;
+}
+
+.btn-primary {
+  @apply bg-accent text-accent-foreground hover:bg-accent/90;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+}
+
+.btn-outline {
+  @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground;
+}
+
+/* Premium cards */
+.card-premium {
+  @apply bg-card rounded-2xl p-6 shadow-premium hover:shadow-premium-lg;
+  @apply transition-all duration-300 border border-border/50;
+}
+
+/* Selection styling */
+::selection {
+  background-color: hsl(var(--accent) / 0.3);
+  color: hsl(var(--accent-foreground));
+}
+
+::-moz-selection {
+  background-color: hsl(var(--accent) / 0.3);
+  color: hsl(var(--accent-foreground));
+}
