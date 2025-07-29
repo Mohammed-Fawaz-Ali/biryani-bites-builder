@@ -35,7 +35,7 @@ const MenuShowcase = () => {
         description: "Premium mutton pieces with fragrant spices and saffron rice",
         price: 399,
         rating: 4.9,
-        image: "https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80",
+        image: "https://anantha.in/wp-content/uploads/2020/03/Mutton-Biryani-Img.jpg",
         spiceLevel: 3
       },
       {
@@ -44,7 +44,7 @@ const MenuShowcase = () => {
         description: "Fresh fish fillets with coastal spices and basmati rice",
         price: 349,
         rating: 4.7,
-        image: "https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80",
+        image: "https://images.aws.nestle.recipes/resized/5d80437e677ba82c7a4f6dfede5f6f24_fish_biryani_1500x700-1_944_531.jpg",
         spiceLevel: 2
       }
     ],
