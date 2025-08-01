@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -20,12 +19,19 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'system-ui', 'sans-serif'],
-        serif: ['Crimson Text', 'serif'],
-        heading: ['Poppins', 'sans-serif'],
-        body: ['Poppins', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
+        heading: ['Playfair Display', 'serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
         arabic: ['Amiri', 'serif'],
+      },
+      fontSize: {
+        'h1': ['48px', { lineHeight: '1.2', fontWeight: '700' }],
+        'h2': ['32px', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3': ['24px', { lineHeight: '1.4', fontWeight: '600' }],
+        'body': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+        'small': ['14px', { lineHeight: '1.4', fontWeight: '400' }],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -75,12 +81,28 @@ const config: Config = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Al-Bayt brand colors
+        // Al-Bayt brand colors matching the design brief
         'deep-blue': '#25283D',
         'sage-green': '#596F62', 
         'gold': '#FFBC42',
         'soft-white': '#EEEEFF',
         'mint-green': '#9CE37D',
+        // Design brief specific colors
+        'primary-bg': '#FAFAFA',
+        'secondary-bg': '#F4F4F4',
+        'primary-text': '#222222',
+        'secondary-text': '#555555',
+        'brand-accent': '#D39D38',
+        'brand-highlight': '#E1C699',
+        'border-light': '#E0E0E0',
+      },
+      spacing: {
+        // 8px base spacing unit as specified in brief
+        '2': '8px',
+        '4': '16px',
+        '6': '24px',
+        '8': '32px',
+        '12': '48px',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -176,11 +198,6 @@ const config: Config = {
         "bounce-in": "bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "slide-in-right": "slide-in-right 0.5s ease-out",
         "pulse-glow": "pulse-glow 2s infinite ease-in-out",
-      },
-      spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '128': '32rem',
       },
       maxWidth: {
         '8xl': '88rem',
