@@ -95,6 +95,14 @@ const config: Config = {
         'brand-accent': '#D39D38',
         'brand-highlight': '#E1C699',
         'border-light': '#E0E0E0',
+        // VIP Lounge colors from image
+        'vip-yellow': '#FEF68A',
+        'light-yellow': '#FEFDD4',       // Light cream background
+        'golden-brown': '#B88A33',     // Antique gold tone
+        'warm-cream': '#FDF8F0',       // Warm cream background
+        'rich-brown': '#8B4513',       // Rich brown for text
+        'soft-gold': '#F4E4BC',        // Soft gold accent
+        'dark-brown': '#5D4037',       // Dark brown for contrast
       },
       spacing: {
         // 8px base spacing unit as specified in brief

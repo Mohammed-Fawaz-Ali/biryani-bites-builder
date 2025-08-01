@@ -122,9 +122,9 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#222222]">
+    <div className="min-h-screen bg-gradient-to-br from-white via-warm-cream to-white text-rich-brown">
       {/* Sticky Navigation with updated colors */}
-      <nav className={`${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-white/90 backdrop-blur-sm'} border-b border-[#E0E0E0] sticky top-0 z-50 transition-all duration-300`}>
+      <nav className={`${isScrolled ? 'bg-yellow/95 backdrop-blur-md shadow-sm' : 'bg-yellow/90 backdrop-blur-sm'} border-b border-[#E0E0E0] sticky top-0 z-50 transition-all duration-300`}>
         <div className="max-w-[1440px] mx-auto px-6 lg:px-24">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -268,16 +268,16 @@ const Index = () => {
       <HeroSection />
 
       {/* Signature Dishes Section */}
-      <section id="menu" className="py-20 bg-[#FAFAFA]">
+      <section id="menu" className="py-20 bg-light-yellow backdrop-blur-sm">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-24">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-h2 font-semibold mb-4 text-[#D39D38]">
-              Our Signature Dishes
-            </h2>
-            <p className="text-base text-[#555555] leading-[1.6]">
-              Authentic Flavors That Delight
-            </p>
-          </div>
+                     <div className="text-center mb-16">
+             <h2 className="font-serif text-h2 font-semibold mb-4 text-golden-brown">
+               Our Signature Dishes
+             </h2>
+             <p className="text-base text-rich-brown leading-[1.6]">
+               Authentic Flavors That Delight
+             </p>
+           </div>
           <MenuShowcase />
         </div>
       </section>
@@ -308,13 +308,13 @@ const Index = () => {
       </section>
 
       {/* Customer Testimonials - Wall of Fame */}
-      <section id="testimonials" className="py-20 bg-[#F8F4EC]">
+      <section id="testimonials" className="py-20 bg-light-yellow">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-24">
           <div className="text-center mb-16">
-            <h2 className="font-serif text-h2 font-semibold mb-4 text-[#222222]">
+            <h2 className="font-serif text-h2 font-semibold mb-4 text-rich-brown">
               Wall of Fame
             </h2>
-            <p className="text-base text-[#555555] leading-[1.6]">
+            <p className="text-base text-rich-brown leading-[1.6]">
               See what our happy customers are saying
             </p>
           </div>
@@ -323,85 +323,85 @@ const Index = () => {
       </section>
 
       {/* Pricing Plans Section */}
-      <section className="py-20 bg-[#FAFAFA]">
+      <section className="py-20 bg-dark-brown text-light-yellow">
         <div className="max-w-[900px] mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-h2 font-semibold mb-4 text-[#222222]">
-              Choose Your Experience
-            </h2>
-            <p className="text-base text-[#555555] leading-[1.6]">
-              Unlock exclusive benefits and elevate your dining journey
-            </p>
-          </div>
+                     <div className="text-center mb-16">
+             <h2 className="font-serif text-h2 font-semibold mb-4 text-light-yellow">
+               DISCOVER THE VIP LOUNGE
+             </h2>
+             <p className="text-base text-soft-gold leading-[1.6]">
+               Unlock exclusive benefits and elevate your dining journey
+             </p>
+           </div>
 
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Standard Membership */}
-            <div className="flex-1 bg-white rounded-lg p-8 border border-[#E0E0E0] transition-all duration-500 hover:shadow-lg">
-              <div className="text-center mb-8">
-                <h3 className="font-serif text-2xl font-semibold text-[#222222] mb-2">Standard</h3>
-                <div className="text-3xl font-bold text-[#222222] mb-2">Free</div>
-                <p className="text-[#555555]">Perfect for casual dining</p>
-              </div>
-              
-              <div className="space-y-4 mb-8">
-                {[
-                  'No Delivery Fee',
-                  'No Reservation Fee',
-                  'Access to full menu',
-                  'Basic support',
-                  'Earn 1 point per SAR 10 spent'
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className="w-5 h-5 rounded-full bg-[#D39D38] flex items-center justify-center">
-                      <span className="text-white text-xs">✓</span>
-                    </div>
-                    <span className="text-[#555555] text-sm">{feature}</span>
-                  </div>
-                ))}
-              </div>
-              
-              <Button className="w-full bg-[#D39D38] hover:bg-[#C08A2E] text-white font-semibold py-3 rounded-lg">
-                Get Started
-              </Button>
-            </div>
+                         {/* Standard Membership */}
+             <div className="flex-1 bg-light-yellow rounded-lg p-8 border border-golden-brown transition-all duration-500 hover:shadow-lg">
+               <div className="text-center mb-8">
+                 <h3 className="font-serif text-2xl font-semibold text-rich-brown mb-2">Standard</h3>
+                 <div className="text-3xl font-bold text-rich-brown mb-2">Free</div>
+                 <p className="text-rich-brown">Perfect for casual dining</p>
+               </div>
+               
+               <div className="space-y-4 mb-8">
+                 {[
+                   'No Delivery Fee',
+                   'No Reservation Fee',
+                   'Access to full menu',
+                   'Basic support',
+                   'Earn 1 point per SAR 10 spent'
+                 ].map((feature, index) => (
+                   <div key={index} className="flex items-center space-x-3">
+                     <div className="w-5 h-5 rounded-full bg-golden-brown flex items-center justify-center">
+                       <span className="text-light-yellow text-xs">✓</span>
+                     </div>
+                     <span className="text-rich-brown text-sm">{feature}</span>
+                   </div>
+                 ))}
+               </div>
+               
+               <Button className="w-full bg-golden-brown hover:bg-dark-brown text-white font-semibold py-3 rounded-lg">
+                 Get Started
+               </Button>
+             </div>
 
-            {/* VIP Membership */}
-            <div className="flex-1 bg-white rounded-lg p-8 border-2 border-[#D39D38] relative transition-all duration-500 hover:shadow-xl transform hover:scale-[1.02]">
-              {/* Most Popular Badge */}
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-[#D39D38] text-white px-6 py-2 rounded-full text-sm font-bold">
-                  Most Popular
-                </div>
-              </div>
-              
-              <div className="text-center mb-8 mt-4">
-                <h3 className="font-serif text-2xl font-semibold text-[#D39D38] mb-2">VIP</h3>
-                <div className="text-3xl font-bold text-[#D39D38] mb-2">₳10<span className="text-lg">/month</span></div>
-                <p className="text-[#555555]">Luxury dining experience</p>
-              </div>
-              
-              <div className="space-y-4 mb-8">
-                <div className="text-[#D39D38] font-semibold mb-3">All Standard benefits PLUS:</div>
-                {[
-                  '30-minute guaranteed delivery window',
-                  'Priority table reservations',
-                  'Complimentary appetizer on birthdays',
-                  'Dedicated VIP support line',
-                  '2× loyalty points per SAR 10 spent'
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className="w-5 h-5 rounded-full bg-[#D39D38] flex items-center justify-center">
-                      <span className="text-white text-xs">✓</span>
-                    </div>
-                    <span className="text-[#555555] text-sm">{feature}</span>
-                  </div>
-                ))}
-              </div>
-              
-              <Button className="w-full bg-[#D39D38] hover:bg-[#C08A2E] text-white font-bold py-3 rounded-lg">
-                Upgrade to VIP
-              </Button>
-            </div>
+                         {/* VIP Membership */}
+             <div className="flex-1 bg-light-yellow rounded-lg p-8 border-2 border-golden-brown relative transition-all duration-500 hover:shadow-xl transform hover:scale-[1.02]">
+               {/* Most Popular Badge */}
+               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                 <div className="bg-golden-brown text-light-yellow px-6 py-2 rounded-full text-sm font-bold">
+                   Most Popular
+                 </div>
+               </div>
+               
+               <div className="text-center mb-8 mt-4">
+                 <h3 className="font-serif text-2xl font-semibold text-golden-brown mb-2">VIP</h3>
+                 <div className="text-3xl font-bold text-golden-brown mb-2">₳10<span className="text-lg">/month</span></div>
+                 <p className="text-rich-brown">Luxury dining experience</p>
+               </div>
+               
+               <div className="space-y-4 mb-8">
+                 <div className="text-golden-brown font-semibold mb-3">All Standard benefits PLUS:</div>
+                 {[
+                   '30-minute guaranteed delivery window',
+                   'Priority table reservations',
+                   'Complimentary appetizer on birthdays',
+                   'Dedicated VIP support line',
+                   '2× loyalty points per SAR 10 spent'
+                 ].map((feature, index) => (
+                   <div key={index} className="flex items-center space-x-3">
+                     <div className="w-5 h-5 rounded-full bg-golden-brown flex items-center justify-center">
+                       <span className="text-light-yellow text-xs">✓</span>
+                     </div>
+                     <span className="text-rich-brown text-sm">{feature}</span>
+                   </div>
+                 ))}
+               </div>
+               
+               <Button className="w-full bg-golden-brown hover:bg-dark-brown text-white font-bold py-3 rounded-lg">
+                 Upgrade to VIP
+               </Button>
+             </div>
           </div>
         </div>
       </section>
