@@ -94,7 +94,7 @@ const Index = () => {
       .slice(0, 2);
   };
 
-  const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || t('user') || 'User';
+  const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || t('common.user') || 'User';
   const userAvatar = user?.user_metadata?.avatar_url || '';
 
   const toggleLanguage = () => {
@@ -127,7 +127,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-light-yellow via-warm-cream to-light-yellow text-rich-brown">
+    <div className="min-h-screen bg-gradient-to-br from-light-yellow via-warm-cream to-light-yellow text-rich-brown" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Sticky Navigation with updated colors */}
       <nav className={`${isScrolled ? 'bg-yellow/95 backdrop-blur-md shadow-sm' : 'bg-yellow/90 backdrop-blur-sm'} border-b border-[#E0E0E0] sticky top-0 z-50 transition-all duration-300`}>
         <div className="max-w-[1440px] mx-auto px-6 lg:px-24">
@@ -185,13 +185,14 @@ const Index = () => {
                 className="bg-[#D39D38] hover:bg-[#C08A2E] text-white border-none shadow-sm"
               >
                 <Globe className="h-4 w-4 mr-2 text-white" />
-                {language === 'en' ? 'العربية' : 'English'}
+                {t('navigation.switchToArabic') || (language === 'en' ? 'العربية' : 'English')}
               </Button>
 
               {/* Cart Icon */}
               <Button
                 className="relative bg-[#D39D38] hover:bg-[#C08A2E] text-white border-none shadow-sm"
                 onClick={() => navigate('/menu')}
+                title={t('common.cart') || 'Cart'}
               >
                 <ShoppingCart className="h-5 w-5 text-white" />
                 {totalItems > 0 && (
@@ -240,6 +241,7 @@ const Index = () => {
                   size="sm" 
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="text-[#222222]"
+                  title={t('common.menu') || 'Menu'}
                 >
                   {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
@@ -272,6 +274,26 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Real-time Activity Banner */}
+      <section className="py-3 bg-[#D39D38]/10 border-b border-[#D39D38]/20">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-24">
+          <div className="flex items-center justify-center space-x-6 text-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-[#222222]">
+                {viewerCount} {t('activity.peopleViewing') || 'people viewing now'}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+              <span className="text-[#222222]">
+                {recentOrder} {t('activity.justOrdered') || 'just ordered!'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Signature Dishes Section */}
       <section id="menu" className="py-20 bg-light-yellow backdrop-blur-sm">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-24">
@@ -303,7 +325,7 @@ const Index = () => {
                     strokeWidth={1.5}
                   />
                 </div>
-                <span className="text-sm font-medium text-light-yellow text-center text-center">
+                <span className="text-sm font-medium text-light-yellow text-center">
                   {action.title}
                 </span>
               </div>
@@ -494,13 +516,25 @@ const Index = () => {
                 {t('footer.followUs') || 'Social'}
               </h3>
               <div className="flex space-x-3">
-                <a href="#" className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center hover:bg-[#D39D38] transition-colors">
+                <a 
+                  href="#" 
+                  className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center hover:bg-[#D39D38] transition-colors"
+                  title={t('common.instagram') || 'Instagram'}
+                >
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center hover:bg-[#D39D38] transition-colors">
+                <a 
+                  href="#" 
+                  className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center hover:bg-[#D39D38] transition-colors"
+                  title={t('common.facebook') || 'Facebook'}
+                >
                   <Facebook className="h-5 w-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center hover:bg-[#D39D38] transition-colors">
+                <a 
+                  href="#" 
+                  className="w-10 h-10 rounded-full bg-[#333333] flex items-center justify-center hover:bg-[#D39D38] transition-colors"
+                  title={t('common.twitter') || 'Twitter'}
+                >
                   <Twitter className="h-5 w-5" />
                 </a>
               </div>

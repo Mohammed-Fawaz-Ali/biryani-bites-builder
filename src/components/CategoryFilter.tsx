@@ -47,7 +47,7 @@ const CategoryFilter = ({
   const displayCategories = categories.length > 0 ? allCategories : defaultCategories;
 
   return (
-    <section className="bg-orange-50 backdrop-blur-sm border-b border-border sticky top-[120px] z-40">
+    <section className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-[120px] z-40">
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Search Bar */}
         <div className="relative mb-6 max-w-md mx-auto">

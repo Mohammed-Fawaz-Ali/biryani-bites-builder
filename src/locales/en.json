@@ -25,6 +25,17 @@
     "title": "Our Signature Dishes",
     "subtitle": "Authentic flavors that tell a story",
     "viewCompleteMenu": "View Complete Menu",
+    "categories": {
+      "biryani": "Biryani",
+      "chicken": "Chicken",
+      "kebab": "Kebabs",
+      "curry": "Curries",
+      "veg": "Vegetarian"
+    },
+    "popular": "Popular",
+    "spiceLevel": "Spice Level",
+    "quickView": "Quick View",
+    "addToCart": "Add to Cart",
     "dishes": {
       "chickenBiryani": "Hyderabadi Chicken Biryani",
       "chickenBiryaniDesc": "Aromatic basmati rice with tender chicken, cooked in traditional dum style",
@@ -37,7 +48,13 @@
       "butterChicken": "Butter Chicken",
       "butterChickenDesc": "Tender chicken in rich, buttery tomato gravy",
       "seekhKebab": "Seekh Kebab",
-      "seekhKebabDesc": "Spiced minced meat grilled to perfection"
+      "seekhKebabDesc": "Spiced minced meat grilled to perfection",
+      "paneerTikka": "Paneer Tikka",
+      "paneerTikkaDesc": "Marinated cottage cheese cubes grilled with peppers",
+      "dalMakhani": "Dal Makhani",
+      "dalMakhaniDesc": "Creamy black lentils cooked overnight",
+      "tandoorKebab": "Seekh Kebab",
+      "tandoorKebabDesc": "Spiced minced meat grilled to perfection"
     }
   },
   "services": {
@@ -50,8 +67,16 @@
   },
   "testimonials": {
     "title": "Wall of Fame",
-    "subtitle": "See what our happy customers are saying"
-  },
+    "subtitle": "See what our happy customers are saying",
+  "comments": {
+    "1": "The best biryani I've ever had! The spices were perfectly balanced and the chicken was so tender. Will definitely order again!",
+    "2": "Amazing seekh kebabs! Reminded me of the street food in Old Delhi. Authentic flavors and great service.",
+    "3": "Loved the custom biryani builder! Made exactly how I like it - mild spices with extra raita. Creative concept!",
+    "4": "Being from Hyderabad, I'm very particular about biryani. This place nailed it! Authentic dum style cooking.",
+    "5": "The live kitchen feature is amazing! Watched my order being prepared. Very transparent and hygienic.",
+    "6": "Great variety of kebabs! The tandoor items were especially good. Packaging was excellent for delivery."
+  }
+},
   "membership": {
     "title": "Choose Your Experience",
     "subtitle": "Unlock exclusive benefits and elevate your dining journey",
@@ -130,13 +155,13 @@
     "followUs": "Follow Us",
     "specialOffer": "Special Offer!",
     "offerText": "Get 15% off on your first order. Use code: WELCOME15",
-    "copyright": "© 2024 Spice Palace. All rights reserved. Made with ❤️ for food lovers.",
+    "copyright": "© 2024 Al-Bayt. All rights reserved. Made with ❤️ for food lovers.",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "sitemap": "Sitemap",
     "address": "123 Spice Street, Food City",
     "phone": "+91 98765 43210",
-    "email": "hello@spicepalace.com",
+    "email": "hello@albayt.com",
     "hours": "11 AM - 11 PM Daily"
   },
   "activity": {
@@ -148,7 +173,14 @@
     "addToCart": "Add to Cart",
     "quickView": "Quick View",
     "spiceLevel": "Spice Level",
-    "english": "English"
+    "english": "English",
+    "user": "User",
+    "cart": "Cart",
+    "menu": "Menu",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "verified": "Verified",
+    "ordered": "Ordered"
   }
 }
-

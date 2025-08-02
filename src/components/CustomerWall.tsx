@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
+import { useI18n } from '@/contexts/I18nContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, Heart, MessageCircle } from 'lucide-react';
 
 const CustomerWall = () => {
+  const { t, isRTL} = useI18n();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   const testimonials = [
@@ -13,8 +14,8 @@ const CustomerWall = () => {
       name: "Priya Sharma",
       location: "Mumbai",
       rating: 5,
-      comment: "The best biryani I've ever had! The spices were perfectly balanced and the chicken was so tender. Will definitely order again!",
-      dish: "Hyderabadi Chicken Biryani",
+      comment: t('testimonials.comments.1'),
+      dish: t('menu.dishes.chickenBiryani'),
       image: "👩‍💼",
       verified: true
     },
@@ -23,8 +24,8 @@ const CustomerWall = () => {
       name: "Rajesh Kumar",
       location: "Delhi",
       rating: 5,
-      comment: "Amazing seekh kebabs! Reminded me of the street food in Old Delhi. Authentic flavors and great service.",
-      dish: "Seekh Kebab",
+      comment: t('testimonials.comments.2'),
+      dish: t('menu.dishes.seekhKebab'),
       image: "👨‍💻",
       verified: true
     },
@@ -33,8 +34,8 @@ const CustomerWall = () => {
       name: "Anjali Patel",
       location: "Ahmedabad",
       rating: 4,
-      comment: "Loved the custom biryani builder! Made exactly how I like it - mild spices with extra raita. Creative concept!",
-      dish: "Custom Biryani",
+      comment: t('testimonials.comments.3'),
+      dish: t('menu.dishes.chickenBiryani'), // or a new key like `customBiryani`
       image: "👩‍🎨",
       verified: false
     },
@@ -43,8 +44,8 @@ const CustomerWall = () => {
       name: "Mohammed Ali",
       location: "Hyderabad",
       rating: 5,
-      comment: "Being from Hyderabad, I'm very particular about biryani. This place nailed it! Authentic dum style cooking.",
-      dish: "Mutton Biryani",
+      comment: t('testimonials.comments.4'),
+      dish: t('menu.dishes.muttonBiryani'),
       image: "👨‍🍳",
       verified: true
     },
@@ -53,8 +54,8 @@ const CustomerWall = () => {
       name: "Sneha Reddy",
       location: "Bangalore",
       rating: 5,
-      comment: "The live kitchen feature is amazing! Watched my order being prepared. Very transparent and hygienic.",
-      dish: "Chicken Tikka Masala",
+      comment: t('testimonials.comments.5'),
+      dish: t('menu.dishes.chickenTikka'),
       image: "👩‍🔬",
       verified: true
     },
@@ -63,18 +64,11 @@ const CustomerWall = () => {
       name: "Vikram Singh",
       location: "Jaipur",
       rating: 4,
-      comment: "Great variety of kebabs! The tandoor items were especially good. Packaging was excellent for delivery.",
-      dish: "Mixed Kebab Platter",
+      comment: t('testimonials.comments.6'),
+      dish: t('menu.dishes.seekhKebab'), // or use a new key like `mixedKebabPlatter`
       image: "👨‍🎯",
       verified: false
     }
-  ];
-
-  const recentOrders = [
-    { customer: "Ravi", dish: "Chicken Biryani", time: "2 mins ago", location: "Bandra" },
-    { customer: "Meera", dish: "Fish Curry", time: "5 mins ago", location: "Andheri" },
-    { customer: "Amit", dish: "Paneer Tikka", time: "8 mins ago", location: "Powai" },
-    { customer: "Kavya", dish: "Mutton Seekh", time: "12 mins ago", location: "Worli" }
   ];
 
   useEffect(() => {
@@ -103,12 +97,14 @@ const CustomerWall = () => {
             <h3 className="text-xl font-bold text-gray-800 mb-1">
               {testimonials[currentTestimonial].name}
               {testimonials[currentTestimonial].verified && (
-                <Badge className="ml-2 bg-green-100 text-yellow-400 text-xs">Verified</Badge>
+                <Badge className="ml-2 bg-green-100 text-yellow-400 text-xs">
+                  {t('common.user')} ✓
+                </Badge>
               )}
             </h3>
             <p className="text-gray-600">{testimonials[currentTestimonial].location}</p>
           </div>
-          
+
           <div className="text-center mb-6">
             <div className="flex justify-center mb-3">
               {renderStars(testimonials[currentTestimonial].rating)}
@@ -117,14 +113,13 @@ const CustomerWall = () => {
               "{testimonials[currentTestimonial].comment}"
             </blockquote>
           </div>
-          
+
           <div className="text-center">
             <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-400 dark:text-gray-900 border-yellow-300">
-              Ordered: {testimonials[currentTestimonial].dish}
+              {t('common.addToCart')}: {testimonials[currentTestimonial].dish}
             </Badge>
           </div>
 
-          {/* Navigation dots */}
           <div className="flex justify-center mt-6 space-x-2">
             {testimonials.map((_, index) => (
               <button
@@ -143,7 +138,7 @@ const CustomerWall = () => {
 
       {/* Customer Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {testimonials.slice(0, 6).map((testimonial) => (
+        {testimonials.map((testimonial) => (
           <Card key={testimonial.id} className="hover:shadow-lg transition-all duration-300 bg-white border-gray-200">
             <CardContent className="p-6">
               <div className="flex items-start space-x-4 mb-4">
@@ -161,11 +156,11 @@ const CustomerWall = () => {
                   </div>
                 </div>
               </div>
-              
+
               <p className="text-gray-600 text-sm leading-relaxed mb-3">
                 {testimonial.comment}
               </p>
-              
+
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-400 dark:text-gray-900 border-yellow-300">
                   {testimonial.dish}
@@ -179,8 +174,6 @@ const CustomerWall = () => {
           </Card>
         ))}
       </div>
-
-      {/* Removed the Recent Activity Feed section */}
     </div>
   );
 };
