@@ -84,7 +84,7 @@ const HeroSection: React.FC = () => {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start no-flip">
               <Button 
                 onClick={() => navigate('/order')}
                 className="bg-golden-brown hover:bg-dark-brown text-white font-semibold px-8 py-6 h-12 text-base rounded-lg transition-colors duration-300 shadow-sm no-flip"
