@@ -583,3 +583,8 @@
   background-color: hsl(var(--accent) / 0.3);
   color: hsl(var(--accent-foreground));
 }
+
+.no-flip {
+  direction: ltr;        /* keep content left-to-right */
+  unicode-bidi: isolate; /* prevent inheriting surrounding bidi context */
+}

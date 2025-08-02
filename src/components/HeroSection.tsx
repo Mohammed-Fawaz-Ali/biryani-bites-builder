@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Star, Clock, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -13,7 +11,7 @@ const imageList = [
   "https://www.shemins.com/wp-content/uploads/2017/05/Shemins-Butter-Chicken-LR.jpg"
 ];
 
-const HeroSection = () => {
+const HeroSection: React.FC = () => {
   const navigate = useNavigate();
   const { t, isRTL } = useI18n();
   const [currentImage, setCurrentImage] = useState(-1);
@@ -53,55 +51,57 @@ const HeroSection = () => {
       
       <div className="max-w-[1440px] mx-auto px-6 lg:px-24 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-24 items-center">
-          {/* Left Content - 6 columns on desktop */}
+          {/* Left Content */}
           <div className="lg:col-span-6 text-center lg:text-left">
-                         <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-rich-brown leading-[1.2] mb-6">
-               Savor Saudi Royalty
-             </h1>
-             
-             <p className="text-lg lg:text-xl text-rich-brown leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-               Where Every Grain Tells a Story
-             </p>
-             
-             <p className="text-base text-rich-brown leading-[1.6] mb-12 max-w-2xl mx-auto lg:mx-0">
-               Experience authentic Indian cuisine at our signature biryanis, as aromatic curaries craftshand by master chefs.
-             </p>
+            <h1 className="font-serif text-4xl lg:text-5xl xl:text-6xl font-bold text-rich-brown leading-[1.2] mb-6">
+              {t('hero.title') || 'Savor Saudi Royalty'}
+            </h1>
+            <p className="text-lg lg:text-xl text-rich-brown leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
+              {t('hero.tagline') || 'Where Every Grain Tells a Story'}
+            </p>
+            <p className="text-base text-rich-brown leading-[1.6] mb-12 max-w-2xl mx-auto lg:mx-0">
+              {t('hero.description') || 'Experience the art of traditional Indian cuisine with our signature biryanis, tandoor specialties, and aromatic curries crafted by master chefs.'}
+            </p>
 
-                         {/* Stats */}
-             <div className="flex flex-wrap justify-center lg:justify-start gap-4 lg:gap-8 mb-12">
-               <div className="flex items-center space-x-3 bg-vip-yellow px-6 py-4 rounded-lg border border-golden-brown shadow-sm">
-                 <div className="w-10 h-10 bg-golden-brown rounded-full flex items-center justify-center">
-                   <span className="text-vip-yellow font-bold text-sm">500+</span>
-                 </div>
-                 <span className="text-sm font-medium text-rich-brown">Happy</span>
-               </div>
-               <div className="flex items-center space-x-3 bg-vip-yellow px-6 py-4 rounded-lg border border-golden-brown shadow-sm">
-                 <div className="w-10 h-10 bg-golden-brown rounded-full flex items-center justify-center">
-                   <span className="text-vip-yellow font-bold text-sm">125+</span>
-                 </div>
-                 <span className="text-sm font-medium text-rich-brown">Dine in Experiences</span>
-               </div>
-             </div>
+            {/* Stats */}
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4 lg:gap-8 mb-12 no-flip">
+              <div className="flex items-center space-x-3 bg-white px-6 py-4 rounded-lg border border-golden-brown shadow-sm">
+                <div className="w-10 h-10 bg-golden-brown rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">500+</span>
+                </div>
+                <span className="text-sm font-medium text-rich-brown no-flip">
+                  {t('hero.stats.customers') || 'Customers'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-3 bg-white px-6 py-4 rounded-lg border border-golden-brown shadow-sm">
+                <div className="w-10 h-10 bg-golden-brown rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">125+</span>
+                </div>
+                <span className="text-sm font-medium text-rich-brown no-flip">
+                  {t('hero.stats.experience') || 'Years Experience'}
+                </span>
+              </div>
+            </div>
 
-                         {/* CTA Buttons */}
-             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-               <Button 
-                 onClick={() => navigate('/menu')}
-                 className="bg-golden-brown hover:bg-dark-brown text-vip-yellow font-semibold px-8 py-6 h-12 text-base rounded-lg transition-colors duration-300 shadow-sm"
-               >
-                 Order Now
-               </Button>
-               <Button 
-                 variant="outline" 
-                 onClick={() => navigate('/menu')}
-                 className="border border-rich-brown text-rich-brown bg-transparent hover:bg-golden-brown hover:text-vip-yellow hover:border-golden-brown font-semibold px-8 py-6 h-12 text-base rounded-lg transition-all duration-300"
-               >
-                 Explore Menu →
-               </Button>
-             </div>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button 
+                onClick={() => navigate('/order')}
+                className="bg-golden-brown hover:bg-dark-brown text-white font-semibold px-8 py-6 h-12 text-base rounded-lg transition-colors duration-300 shadow-sm no-flip"
+              >
+                {t('hero.orderNow') || 'Order Now'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/menu')}
+                className="border border-rich-brown text-rich-brown bg-transparent hover:bg-golden-brown hover:text-vip-yellow hover:border-golden-brown font-semibold px-8 py-6 h-12 text-base rounded-lg transition-all duration-300 no-flip"
+              >
+                {t('hero.exploreMenu') || 'Explore Menu →'}
+              </Button>
+            </div>
           </div>
 
-          {/* Right Image - 6 columns on desktop */}
+          {/* Right Image */}
           <div className="lg:col-span-6 flex justify-center">
             <div className="relative w-full max-w-lg">
               <div 
@@ -110,15 +110,14 @@ const HeroSection = () => {
               >
                 <img
                   src={currentImage === -1 ? initialImage : imageList[currentImage]}
-                  alt="Signature Biryani Dish"
+                  alt={t('hero.imageAlt') || 'Signature Biryani Dish'}
                   className={`w-full h-full object-cover transition-opacity duration-700 ${fade ? 'opacity-100' : 'opacity-0'}`}
                   loading="lazy"
                 />
               </div>
-              
-                             {/* Decorative elements */}
-               <div className="absolute -top-4 -right-4 w-8 h-8 bg-golden-brown rounded-full opacity-70"></div>
-               <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-soft-gold rounded-full opacity-60"></div>
+              {/* Decorative elements */}
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-golden-brown rounded-full opacity-70"></div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-soft-gold rounded-full opacity-60"></div>
             </div>
           </div>
         </div>
