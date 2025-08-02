@@ -24,14 +24,14 @@ const config: Config = {
         heading: ['Playfair Display', 'serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
-        arabic: ['Amiri', 'serif'],
+        arabic: ['"Noto Naskh Arabic"', 'Amiri', 'sans-serif'],
       },
       fontSize: {
         'h1': ['48px', { lineHeight: '1.2', fontWeight: '700' }],
         'h2': ['32px', { lineHeight: '1.3', fontWeight: '600' }],
         'h3': ['24px', { lineHeight: '1.4', fontWeight: '600' }],
-        'body': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
-        'small': ['14px', { lineHeight: '1.4', fontWeight: '400' }],
+        'body': ['20px', { lineHeight: '1.6', fontWeight: '400' }],
+        'small': ['18px', { lineHeight: '1.4', fontWeight: '400' }],
       },
       colors: {
         border: "hsl(var(--border))",
